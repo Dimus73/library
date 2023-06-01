@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="styleh.css">
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue&family=Roboto&display=swap" rel="stylesheet">
+    <title>Common library</title>
+</head>
+<body>
+    
+    <header> 
+    <a href="#search"><p>Search</p></a>
+    <a href="#add"><p>Add</p></a>
+    <img src="logo.png" width="60px">
+    <a href="#about"><p>About us</p></a>
+    <a href="#news"><p>News</p></a>
+    <p id='profile'> Login/Register </p>
+    </header>
+    <main id="content">
+        <div id="jamb">
+            <img id="jpic" src='jamb.jpg'> 
+            <div id="text">
+                <p>Building community.</p>
+                <p>Inspiring readers.</p>
+                <p>Expanding book access.</p>
+            </div>
+        </div>
+        <div id="stickcont">
+            <div id="stick">
+            </div>
+        </div>
+        <div id="newbooks">
+            <!-- script -->
+        </div>
+        <div id="stickcont">
+            <div id="stick">
+            </div>
+        </div>
+        <div id="search_form">
+            <form method="GET" id="search">
+                          <input name="search"> 
+                <button type="submit" onclick="searchBook">Search a book</button>
+            </form>
+         </div>
+         <div id="stickcont">
+            <div id="stick">
+            </div>
+        </div>
+        <div id="searchRes">
+            
+        </div>
+    </main>
+    <script>
+function searchBook (event) {
+    event.preventDefault();
+    let form=document.querySelector('#search');
+    let question=event.value;
+    fetch ('https//?' + question)
+    .then(res => res.json())
+    .then(data => {let books=data.books;
+        html=`
+        <h3> Title: ${books.title} </h3>
+        <h4> Author:${books.author} </h4>
+        <h4> Comments:${books.comments}</h4>
+        <h4> Owner: ${books.owner}</h4>
+        <h4> Owner: ${books.owner.address}</h4>
+`
+      })
+}
+     </script>
+</body>
+</html>
