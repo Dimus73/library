@@ -7,6 +7,11 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Document</title>
+	<style>
+		a{
+			margin-left: 10px;
+		}
+	</style>
 </head>
 <body>
 {% endblock %}
@@ -18,6 +23,8 @@
 	<a href="/login/login">Login</a>
 	<a href="/login/registry/">Registry</a>
 	<a href="/login/logout/">Logout</a>
+	<a href="/bookslist/">Books list</a>
+	<a href="/bookadd">Add the book</a>
 </div>
 <div>
 	authenticated: {{request.user.is_authenticated}} <br>
