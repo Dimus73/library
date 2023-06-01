@@ -1,0 +1,78 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+header {
+    background-color: black;
+    width: 100%;
+    height: 50px;
+    color: white;
+    font-family: 'Roboto', sans-serif;
+    font-size: 22px;
+    display: flex;
+    justify-content: center; /* horizontally */
+    align-items: center;
+   }
+
+a {
+    text-decoration: none;
+    margin-left: 10px;
+    padding-right: 10px;
+}
+
+.link, p {
+    color: white;
+}
+#profile {
+    position:absolute;
+    margin-left: 80%;
+    margin-top: 20px;
+    font-size: 18px;
+}
+
+#jamb {
+    display: flex;
+    align-items: center; /* Align items vertically */
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+#text {
+    font-family: 'Roboto', sans-serif;
+    font-size: 32px;
+    font-weight: bold;
+    width: 49%;
+}
+
+#jpic {
+    width: 49%;
+}
+
+#content {
+    margin-top: 20px;
+    
+}
+
+#stick {
+    margin-top: 20px;
+    padding: 0;
+    width: 90%;
+    height: 3px;
+    background-color: black;
+}
+#stickcont {
+    display: flex;
+       justify-content: center; /* horizontally */
+ 
+}
+
+#search_form{
+    padding-top: 50px;
+    display: flex;
+    justify-content: center; /* horizontally */
+
+}
+
+#newbooks {
+    width: 220 px;
+}
