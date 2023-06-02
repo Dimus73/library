@@ -15,16 +15,21 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from .views import Book_Add, BooksList, homepage, BooksApi
 from rest_framework import routers
+
 
 router = routers.SimpleRouter()
 router.register(r'book', BooksApi)
 
 urlpatterns = [
     path('', homepage, name='homepage_path'),
+    # path('/homepage/', homepage, name='homepage_path'),
     path('bookslist/', BooksList.as_view(), name='booklist_path'),
     path('bookadd/', Book_Add.as_view(), name='bookadd_path'),
+    # path('api/v1/auth/', include('rest_framework.urls')),
+    path('api/v1/auth/', include('djoser.urls')),
+    path('api/v1/auth/', include('djoser.urls.authtoken')),
     path('api/v1/', include(router.urls))   
 ]

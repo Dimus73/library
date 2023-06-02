@@ -3,7 +3,7 @@ from django.urls import reverse_lazy
 from .models import Books
 from django.shortcuts import render
 from django.views.generic import CreateView, ListView
-from rest_framework import generics, viewsets
+from rest_framework import generics, viewsets, permissions
 from .serializers import BooksSerializer
 
 # Create your views here.
@@ -27,3 +27,4 @@ class Book_Add(CreateView):
 class BooksApi(viewsets.ModelViewSet):
     queryset = Books.objects.all()
     serializer_class = BooksSerializer
+    permission_classes = [permissions.IsAuthenticated]
