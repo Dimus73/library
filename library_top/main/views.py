@@ -3,6 +3,8 @@ from django.urls import reverse_lazy
 from .models import Books
 from django.shortcuts import render
 from django.views.generic import CreateView, ListView
+from rest_framework import generics, viewsets
+from .serializers import BooksSerializer
 
 # Create your views here.
 
@@ -21,3 +23,7 @@ class Book_Add(CreateView):
     fields = '__all__'
     template_name = 'main/book_add.html'
     success_url = reverse_lazy ('booklist_path')
+
+class BooksApi(viewsets.ModelViewSet):
+    queryset = Books.objects.all()
+    serializer_class = BooksSerializer
