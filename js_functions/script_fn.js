@@ -11,7 +11,7 @@ async function getDataFromAPI(str_q){
 	}
 }
 
-
+  
 // Get 40 books with image
 async function search40books(search){
 	let setOfBookObjects=[];
