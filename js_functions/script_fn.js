@@ -1,4 +1,4 @@
-// Functions ********
+// Functions -----
 console.log('Hello');
 
 async function getDataFromAPI(str_q){
