@@ -9,22 +9,26 @@
     <title>Common library</title>
 </head>
 <body>
-    
-    <header> 
-    <a href="#search"><p>Search</p></a>
-    <a href="#add"><p>Add</p></a>
-    <img src="logo.png" width="60px">
-    <a href="#about"><p>About us</p></a>
-    <a href="#news"><p>News</p></a>
-    <p id='profile'> Login/Register </p>
-    </header>
+    <header>
+        <a href="search.html">Search</a>
+        <a href="add.html">Add</a>
+        <a href="index.html"><img src="logo.png" width="60px" alt="Logo"></a>
+        <a href="about.html">About us</a>
+        <a href="news.html">News</a>
+        <p id="profile">
+          <a href="login.html">Login</a>/<a href="register.html">Register</a>
+        </p>
+      </header>
+      
+      
+      
     <main id="content">
         <div id="jamb">
             <img id="jpic" src='jamb.jpg'> 
             <div id="text">
-                <p>Building community.</p>
-                <p>Inspiring readers.</p>
-                <p>Expanding book access.</p>
+                <p id="slogan">Building community.</p>
+                <p id="slogan">Inspiring readers.</p>
+                <p id="slogan">Expanding book access.</p>
             </div>
         </div>
         <div id="stickcont">
@@ -53,22 +57,26 @@
         </div>
     </main>
     <script>
-function searchBook (event) {
-    event.preventDefault();
-    let form=document.querySelector('#search');
-    let question=event.value;
-    fetch ('https//?' + question)
-    .then(res => res.json())
-    .then(data => {let books=data.books;
-        html=`
-        <h3> Title: ${books.title} </h3>
-        <h4> Author:${books.author} </h4>
-        <h4> Comments:${books.comments}</h4>
-        <h4> Owner: ${books.owner}</h4>
-        <h4> Owner: ${books.owner.address}</h4>
-`
-      })
-}
-     </script>
+    function searchBook (event) {
+        event.preventDefault();
+        let form=document.querySelector('#search');
+        let question=event.value;
+        fetch ('https//?' + question)
+        .then(res => res.json())
+            .then(data => {console.log(data.books);
+                data.books.foreEach((id)=> {
+                console.log(books)
+                html=`
+                    <h3> Title: ${books.title} </h3>
+                    <h4> Author:${books.author} </h4>
+                    <h4> Comments:${books.comments}</h4>
+                    <h4> Owner: ${books.owner}</h4>
+                    <h4> Owner: ${books.owner.ad}</h4>`
+                                        }
+                                    )-
+
+                            })
+                }
+    </script>
 </body>
 </html>
