@@ -26,5 +26,5 @@ urlpatterns = [
     path('', homepage, name='homepage_path'),
     path('bookslist/', BooksList.as_view(), name='booklist_path'),
     path('bookadd/', Book_Add.as_view(), name='bookadd_path'),
-    path('api/v1/', include(router.urls))
+    path('api/v1/', include(router.urls)) 
 ]
