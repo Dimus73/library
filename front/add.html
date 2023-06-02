@@ -31,19 +31,168 @@
         <div id="stickcont">
             <div id="stick">
             </div>
-        </div>    
+        </div> 
+
         <div id="search_form_add">
-            <h3>Start typing a title or author of the book here to choose the rigth version and get a full info about the book you'd like to add:
+            <h3>Start typing a title or author of the book here to choose the right version and get a full info about the book you'd like to add:
              </h3>
-            <form method="GET" id="search">
-                          <input name="search"> 
-                <button type="submit" onclick="searchBook">Search a book </button>
-            </form>
-         </div>
-
+             <form method="GET" id="search">
+                <input id="searchInput" name="search"> 
+                <button type="submit" onclick="searchGoogle(event)">Search a book</button>
+              </form>
+        
+         <form id="bookForm">
+            <div id="googleBooks">
+            </div>
+            <input name="comment"> 
+            <select name="age">
+                <option>Select the age</option>
+                <option>0-1</option>
+                <option>1-2</option>
+                <option>2-6</option>
+                <option>6-12</option>
+                <option>12-16</option>
+                <option>Older</option>
+            </select>
+            <button type="submit" id="sendbook"> Add book </button>
+        </form> </div>
     </main>
-    <script>
+<script>
 
-    </script>
+// get versions from google
+let books = []
+async function getDataFromAPI(str_q){
+	try{
+		let charecter = await fetch(str_q);
+		let charecter_ob = await charecter.json();
+		return charecter_ob;
+	}catch{
+		console.log('Error');
+	}
+}
+  
+// Get 40 books with image
+async function search40books(search){
+	let setOfBookObjects=[];
+	let lengthOfSet = 20;
+	let googlePosition = 0;
+	let googleStep = 40;
+	let q = search.split(' ').join('+');
+	console.log(q);
+	do {
+		let str_q = 'https://www.googleapis.com/books/v1/volumes?q=' + q;
+		str_q+= `&startIndex=${googlePosition}`;
+		str_q+= `&maxResults=${googleStep}`;
+
+		let response = await getDataFromAPI(str_q)
+		for (i of response.items){
+			if (setOfBookObjects.length < lengthOfSet){
+				try {
+					setOfBookObjects.push({
+					title:i.volumeInfo.title,
+					author:i.volumeInfo.authors.join(', '),
+					age_range:'???',
+					img:i.volumeInfo.imageLinks.thumbnail,
+					googl_id:i.volumeInfo.id
+				})
+				} catch (error) {
+					continue;
+				}
+			} else{
+				break
+			}
+		}
+		googlePosition += googleStep;
+	} while (setOfBookObjects.length < lengthOfSet)
+	return setOfBookObjects;
+
+}
+async function searchGoogle(event) {
+  event.preventDefault();
+  let input = document.querySelector('#searchInput');
+  let search = input.value;
+  books = await search40books(search); 
+  console.log(books);
+  let div = document.querySelector('#googleBooks');
+  div.innerHTML = '';
+  idDiv = 0;
+
+  books.forEach((item, index) => {
+    const { title, author, img } = item;
+    let html = `<div class="book" id="book${index}" onclick="selectBook(event, ${index})">
+      <h5>${title}</h5>
+      <h6>${author}</h6>
+      <img src=${img} width='40px'>
+    </div>`;
+
+    div.innerHTML += html;
+    idDiv++;
+  });
+}
+let selectedBook = null;
+
+// book selection
+function selectBook(event, index) {
+  if (selectedBook) {
+    selectedBook.classList.remove('selected');
+  }
+
+  let bookDiv = event.target.closest('.book');
+  bookDiv.classList.add('selected');
+  selectedBook = bookDiv;
+
+  let selectedBookObject = books[index]; // Access the book object using the index
+
+  if (selectedBookObject) {
+    // Access the desired properties from the book object
+    let title = selectedBookObject.title;
+    let author = selectedBookObject.author;
+    let ageRange = selectedBookObject.age_range;
+    let img = selectedBookObject.img;
+        }
+    }
+// Event listener for form submission
+document.querySelector('#bookForm').addEventListener('submit', function (event) {
+  event.preventDefault();
+
+  // Get the selected book ID
+  let bookId = selectedBook ? selectedBook.id : null;
+
+  // Get the selected age
+  let ageSelect = document.querySelector('select[name="age"]');
+  let selectedAge = ageSelect.value;
+
+  // Get the comment
+  let commentInput = document.querySelector('input[name="comment"]');
+  let comment = commentInput.value;
+
+  if (selectedBook) {
+    let selectedBookObject = books.find((item, index) => index === parseInt(bookId.replace('book', '')));
+
+    if (selectedBookObject) {
+      // Access the desired properties from the book object
+      let title = selectedBookObject.title;
+      let author = selectedBookObject.author;
+      let ageRange = selectedAge;
+      let img = selectedBookObject.img;
+      let commentText = comment;
+
+      console.log('Selected Book Title:', title);
+      console.log('Selected Book Author:', author);
+      console.log('Selected Book Age Range:', ageRange);
+      console.log('Selected Book Image:', img);
+      console.log('Selected Book Comment:', commentText);
+    }
+  }
+
+  // Reset the form values
+  selectedBook = null;
+  bookId = null;
+  ageSelect.value = '';
+  commentInput.value = '';
+});
+
+</script>
+
 </body>
 </html>
