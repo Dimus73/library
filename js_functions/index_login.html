@@ -25,6 +25,7 @@
 	</style>
 </head>
 <body>
+	<h1>Library API sample</h1>
 	<div id="user_info">
 		<div>User:</div>
 		<div id="user"></div>
@@ -34,6 +35,7 @@
 	</div>
 	<div class="section">
 		<h2>New User</h2>
+		<h4>http://127.0.0.1:8000/api/v1/auth/users/</h4>
 		<div>
 			<form action="" method="post">
 				Username: <input type="text" name="un">
@@ -45,22 +47,26 @@
 	</div>
 
 	<div class="section">
-		<h2>Login</h2>
+		<h2>Login/Logout</h2>
+		<h4>LOGIN:http://127.0.0.1:8000/api/v1/auth/token/login/ LOGOUT:http://127.0.0.1:8000/api/v1/auth/token/logout/</h4>
 		<div>
 			<form action="" method="post">
 				Username: <input type="text" name="un">
 				Login: <input type="text" name="pw">
 				<button onclick="loginUserFunction(event)">Login</button>
+				<button onclick="logoutUserFunction(event)">Logout</button>
 			</form>
 			<!-- Current user: <h3 id="user"></h3> -->
 		</div>
   </div>
 
 	<div class="section">
-		<h2>Get all books</h2>
+		<h2>Get all books from Books</h2>
+		<h4>http://127.0.0.1:8000/api/v1/book/</h4>
 		<div>
 			<form action="" method="post">
 				<button onclick="getAllBooks(event)">All books</button>
+				<button onclick="clearBooksList(event)">Clear books list</button>
 			</form>
 			<div id="books_list">
 				<!-- book list -->
@@ -70,17 +76,51 @@
 
 	<div class="section">
 		<h2>Add book</h2>
+		<h4>http://127.0.0.1:8000/api/v1/book/</h4>
 		<div>
-			<form action="" method="post">
+			<form action="" method="post" name="add_book">
+				Title: <input type="text" name="title">
+				Author: <input type="text" name="author">
+				IMG: <input type="text" name="img">
+				Google id: <input type="text" name="googl_id">
+				Age range: <input type="text" name="age_range">
 				<button onclick="addBook(event)">Add book</button>
+				<br>
+				RESALT: <input type="text" readonly name="res" style="width: 80%;">
 			</form>
 			<div id="books_list">
 				<!-- book list -->
 			</div>
 		</div>
   </div>
+	<!--  -----------Age Range -->
+	<div class="section">
+		<h2>Get all "age range"</h2>
+		<h4>http://127.0.0.1:8000/api/v1/age/</h4>
+		<div>
+			<form action="" method="post">
+				<button onclick="getAllAgeRange(event)">All age range</button>
+				<select id="age_range">
+					<!-- Range -->
+				</select>
+			</form>
+		</div>
+  </div>
 
-	
+	<!-- Search in Books by Google_id -->
+	<div class="section">
+		<h2>Search by Googl id</h2>
+		<h4>http://127.0.0.1:8000/api/v1/book/ggl/id</h4>
+		<div>
+			<form action="" method="post" name="googl_id">
+				Enter Google ID <input type="text" name="id">
+				<button onclick="searcheByGooglId(event)">Search</button>
+			</form>
+			<div id="ggl_found"></div>
+		</div>
+  </div>
+
+
 		<script src="script_login.js"></script>
 </body>
 </html>
