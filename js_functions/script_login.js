@@ -60,14 +60,16 @@ async function requestGET(url, options={}){
 // *****************
 
 let urls = {
-	createUser:'http://127.0.0.1:8000/api/v1/auth/users/',
-	loginUser:'http://127.0.0.1:8000/api/v1/auth/token/login/',
-	logoutUser: 'http://127.0.0.1:8000/api/v1/auth/token/logout/',
+	createUser:        'http://127.0.0.1:8000/api/v1/auth/users/',
+	loginUser:         'http://127.0.0.1:8000/api/v1/auth/token/login/',
+	logoutUser:        'http://127.0.0.1:8000/api/v1/auth/token/logout/',
 
-	getAllBooks:'http://127.0.0.1:8000/api/v1/book/',
-	addBook:'http://127.0.0.1:8000/api/v1/book/',
+	getAllBooks:       'http://127.0.0.1:8000/api/v1/book/',
+	addBook:           'http://127.0.0.1:8000/api/v1/book/',
 
-	getAllAgeRange: 'http://127.0.0.1:8000/api/v1/age/'
+	getAllAgeRange:    'http://127.0.0.1:8000/api/v1/age/',
+
+	searchByGoogleID:  'http://127.0.0.1:8000/api/v1/ggl/',
 }
 
 
@@ -197,4 +199,30 @@ async function getAllAgeRange(e){
 	}
 	
 }
+
+// *********************************************
+// *********************************************
+// -----------Search in Books by Google_id
+async function searcheByGooglId(e){
+	e.preventDefault();
+	let form=document.forms['googl_id'];
+	let searcheID = form.elements.id.value
+	let res = await requestGET(urls.searchByGoogleID  + searcheID);
+	console.log(res);
+
+	let listDiv = document.querySelector('#ggl_found')
+	listDiv.textContent='';
+	let ul = document.createElement('ul');
+	for (t in res){
+		let li = document.createElement('li');
+		li.innerHTML = t +": <b>" + res[t] + '</b>'
+		ul.appendChild(li);
+	}
+	listDiv.appendChild(ul);
+	let hr = document.createElement('hr');
+	listDiv.appendChild(hr);
+}
+
+	
+
 
