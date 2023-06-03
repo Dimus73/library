@@ -7,13 +7,31 @@
 	<title>Document</title>
 	<style>
 		.section{
+			display: inline-block;
+			width: 70%;
 			border: 1px solid black;
 			margin: 20px;
 			padding: 10px;
 		}
+		#user_info{
+			display: inline-block;
+			position: fixed;
+			top:10px;
+			right: 10px;
+			border: 1px solid black;
+			padding: 10px;
+			width: 200px;
+		}
 	</style>
 </head>
 <body>
+	<div id="user_info">
+		<div>User:</div>
+		<div id="user"></div>
+		<br>
+		<div>Token:</div>
+		<dit id="token"></dit>
+	</div>
 	<div class="section">
 		<h2>New User</h2>
 		<div>
@@ -25,6 +43,7 @@
 			</form>
 		</div>
 	</div>
+
 	<div class="section">
 		<h2>Login</h2>
 		<div>
@@ -36,6 +55,31 @@
 			<!-- Current user: <h3 id="user"></h3> -->
 		</div>
   </div>
+
+	<div class="section">
+		<h2>Get all books</h2>
+		<div>
+			<form action="" method="post">
+				<button onclick="getAllBooks(event)">All books</button>
+			</form>
+			<div id="books_list">
+				<!-- book list -->
+			</div>
+		</div>
+  </div>
+
+	<div class="section">
+		<h2>Add book</h2>
+		<div>
+			<form action="" method="post">
+				<button onclick="addBook(event)">Add book</button>
+			</form>
+			<div id="books_list">
+				<!-- book list -->
+			</div>
+		</div>
+  </div>
+
 	
 		<script src="script_login.js"></script>
 </body>
