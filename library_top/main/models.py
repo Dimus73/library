@@ -8,7 +8,7 @@ class Books(models.Model):
     title        = models.CharField(max_length=50, blank=False)
     author       = models.CharField(max_length=200, blank=True, null=True) 
     age_range    = models.ForeignKey('Age_range',on_delete=models.PROTECT) 
-    img          = models.ImageField(blank=True, null=True)
+    img          = models.URLField(blank=True, null=True)
     googl_id     = models.CharField(max_length=20,blank=True,null=True)
     actual       = models.BooleanField(default=True)
     def __str__ (self):

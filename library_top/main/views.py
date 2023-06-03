@@ -1,10 +1,12 @@
 from django.forms import fields
 from django.urls import reverse_lazy
-from .models import Books
+from django.views import generic
+from .models import Age_range, Books
 from django.shortcuts import render
 from django.views.generic import CreateView, ListView
 from rest_framework import generics, viewsets, permissions
-from .serializers import BooksSerializer
+from .serializers import BooksSerializer, Age_rangeSerializer
+
 
 # Create your views here.
 
@@ -28,3 +30,8 @@ class BooksApi(viewsets.ModelViewSet):
     queryset = Books.objects.all()
     serializer_class = BooksSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+class Age_rangeApi(generics.ListAPIView):
+    queryset = Age_range.objects.all()
+    serializer_class = Age_rangeSerializer
+    # permission_classes = [permissions.IsAuthenticatedOrReadOnly]
