@@ -1,6 +1,7 @@
 // Где-то в глобальной переменной нужно хронить токен пользователя - Это его идентификатор
 let userTOKEN=''
 let divUser = document.querySelector('#user');
+let divID =document.querySelector('#user_id');
 let divToken =document.querySelector('#token');
 
 // *****************
@@ -61,8 +62,10 @@ async function requestGET(url, options={}){
 
 let urls = {
 	createUser:        'http://127.0.0.1:8000/api/v1/auth/users/',
-	loginUser:         'http://127.0.0.1:8000/api/v1/auth/token/login/',
+	// loginUser:         'http://127.0.0.1:8000/api/v1/auth/token/login/',
+	loginUser:         'http://127.0.0.1:8000/api/v1/auth/authenticate/',
 	logoutUser:        'http://127.0.0.1:8000/api/v1/auth/token/logout/',
+	currentUser:       'http://127.0.0.1:8000/api/v1/auth/users/me/',
 
 	getAllBooks:       'http://127.0.0.1:8000/api/v1/book/',
 	addBook:           'http://127.0.0.1:8000/api/v1/book/',
@@ -106,14 +109,15 @@ async function loginUserFunction(e){
 	
 	userTOKEN = await requestPOST(urls.loginUser, data)
 	console.log(typeof(userTOKEN), userTOKEN);
-	if (!('auth_token' in userTOKEN)){
+	if (!('token' in userTOKEN)){
 		console.log("Failed to login", userTOKEN.code, userTOKEN.text);
 	} else {
-		userTOKEN = userTOKEN.auth_token;
-		localStorage.setItem('token', userTOKEN);
+		localStorage.setItem('token', userTOKEN.token);
+		localStorage.setItem('user_id', userTOKEN.id);
 		console.log(userTOKEN);
 		divUser.textContent = username;
-		divToken.textContent = userTOKEN;
+		divID.textContent = userTOKEN.id;
+		divToken.textContent = userTOKEN.token;
 	}
 }
 
@@ -127,6 +131,24 @@ async function logoutUserFunction(e){
 		divUser.textContent = 'Undefined';
 		divToken.textContent = '';
 	
+}
+
+async function currentUserInfo(e){
+	e.preventDefault();
+	let token=localStorage.getItem('token');
+	res = await requestGET(urls.currentUser)
+	console.log(res);
+
+	let listDiv = document.querySelector('#user_info')
+	listDiv.textContent='';
+	let ul = document.createElement('ul');
+	for (t in res){
+		let li = document.createElement('li');
+		li.innerHTML = t +": <b>" + book[t] + '</b>'
+		ul.appendChild(li);
+	}
+	listDiv.appendChild(ul);
+
 }
 
 // *********************************************
