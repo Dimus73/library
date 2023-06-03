@@ -27,4 +27,4 @@ class Book_Add(CreateView):
 class BooksApi(viewsets.ModelViewSet):
     queryset = Books.objects.all()
     serializer_class = BooksSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
