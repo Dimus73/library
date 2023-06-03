@@ -33,7 +33,7 @@ async function requestPOST(url, dataObj={}, token=''){
 		}
 	} catch (error) {
 		console.log(error);
-    return 'Error connection';
+    return 'Error conaction';
   }
 
 }
@@ -60,16 +60,12 @@ async function requestGET(url, options={}){
 // *****************
 
 let urls = {
-	createUser:        'http://127.0.0.1:8000/api/v1/auth/users/',
-	loginUser:         'http://127.0.0.1:8000/api/v1/auth/token/login/',
-	logoutUser:        'http://127.0.0.1:8000/api/v1/auth/token/logout/',
+	createUser:'http://127.0.0.1:8000/api/v1/auth/users/',
+	loginUser:'http://127.0.0.1:8000/api/v1/auth/token/login/',
+	logoutUser: 'http://127.0.0.1:8000/api/v1/auth/token/logout/',
 
-	getAllBooks:       'http://127.0.0.1:8000/api/v1/book/',
-	addBook:           'http://127.0.0.1:8000/api/v1/book/',
-
-	getAllAgeRange:    'http://127.0.0.1:8000/api/v1/age/',
-
-	searchByGoogleID:  'http://127.0.0.1:8000/api/v1/ggl/',
+	getAllBooks:'http://127.0.0.1:8000/api/v1/book/',
+	addBook:'http://127.0.0.1:8000/api/v1/book/',
 }
 
 
@@ -110,7 +106,6 @@ async function loginUserFunction(e){
 		console.log("Failed to login", userTOKEN.code, userTOKEN.text);
 	} else {
 		userTOKEN = userTOKEN.auth_token;
-		localStorage.setItem('token', userTOKEN);
 		console.log(userTOKEN);
 		divUser.textContent = username;
 		divToken.textContent = userTOKEN;
@@ -129,9 +124,7 @@ async function logoutUserFunction(e){
 	
 }
 
-// *********************************************
-// *********************************************
-// -----------Books
+//-----------------------------------------------
 async function getAllBooks(e){
 	e.preventDefault();
 
@@ -152,77 +145,17 @@ async function getAllBooks(e){
 	}
 }
 
-function clearBooksList(e){
-	e.preventDefault();
-	let listDiv = document.querySelector('#books_list')
-	listDiv.textContent = '';
-
-}
-
 async function addBook(e){
 	e.preventDefault();
-	let form=document.forms['add_book'];
-	console.log(form);
 	let bookInfo={
-		title: form.elements.title.value,
-		author: form.elements.author.value,
-		img: form.elements.img.value,
-		googl_id: form.elements.googl_id.value,
+		title: "New book",
+		author: "Author1, Aut2",
+		// img: "http://127.0.0.1:8000/media/cat.jpeg",
+		googl_id: "khjgkf76",
 		actual: true,
-		age_range: form.elements.age_range.value
+		age_range: 1
 	}
-	let token=localStorage.getItem('token');
-	res = await requestPOST (urls.addBook, bookInfo, token);
+	res = await requestPOST (urls.addBook, bookInfo, userTOKEN);
 	console.log('Book added:', res);
-	form.elements.res.value = 'Book added: "'+ res.title + '"'
 }
-
-// *********************************************
-// *********************************************
-// -----------Age Range
-async function getAllAgeRange(e){
-	e.preventDefault();
-
-	let res = await requestGET(urls.getAllAgeRange);
-	console.log(res);
-	let ageRangeObj ={}
-	for (r of res){
-		ageRangeObj[r.range]=r.id;
-	}
-	console.log(ageRangeObj);
-	let select = document.querySelector('#age_range')
-	for (key in ageRangeObj){
-		let opt = document.createElement('option');
-		opt.setAttribute('value', ageRangeObj[key]);
-		opt.textContent = key;
-		select.appendChild(opt);
-	}
-	
-}
-
-// *********************************************
-// *********************************************
-// -----------Search in Books by Google_id
-async function searcheByGooglId(e){
-	e.preventDefault();
-	let form=document.forms['googl_id'];
-	let searcheID = form.elements.id.value
-	let res = await requestGET(urls.searchByGoogleID  + searcheID);
-	console.log(res);
-
-	let listDiv = document.querySelector('#ggl_found')
-	listDiv.textContent='';
-	let ul = document.createElement('ul');
-	for (t in res){
-		let li = document.createElement('li');
-		li.innerHTML = t +": <b>" + res[t] + '</b>'
-		ul.appendChild(li);
-	}
-	listDiv.appendChild(ul);
-	let hr = document.createElement('hr');
-	listDiv.appendChild(hr);
-}
-
-	
-
 
