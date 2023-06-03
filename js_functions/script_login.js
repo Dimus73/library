@@ -73,6 +73,8 @@ let urls = {
 	getAllAgeRange:    'http://127.0.0.1:8000/api/v1/age/',
 
 	searchByGoogleID:  'http://127.0.0.1:8000/api/v1/ggl/',
+
+	addBookToLibrary:  'http://127.0.0.1:8000/api/v1/library/' 
 }
 
 
@@ -246,5 +248,23 @@ async function searcheByGooglId(e){
 }
 
 	
+// *********************************************
+// *********************************************
+// -----------Library
+async function addBookToLibrary(e){
+	e.preventDefault();
+	let form=document.forms['add_book_library'];
+	console.log(form);
+	let libraryInfo={
+		book: form.elements.bookid.value,
+		user: localStorage.getItem('user_id'),
+		comment: form.elements.comment.value,
+	}
+	form.elements.userid.value = localStorage.getItem('user_id');
+	let token=localStorage.getItem('token');
+	res = await requestPOST (urls.addBookToLibrary, libraryInfo, token);
+	console.log('Book added to library:', res);
+	form.elements.res.value = 'Book added to library'
+}
 
 

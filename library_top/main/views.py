@@ -1,11 +1,11 @@
 from django.forms import fields
 from django.urls import reverse_lazy
 from django.views import generic
-from .models import Age_range, Books
+from .models import Age_range, Books, Library
 from django.shortcuts import render
 from django.views.generic import CreateView, ListView
 from rest_framework import generics, viewsets, permissions
-from .serializers import BooksSerializer, Age_rangeSerializer, BoobByGglIdSerializer
+from .serializers import BooksSerializer, Age_rangeSerializer, BoobByGglIdSerializer, LibrarySerializer
 
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
@@ -51,5 +51,10 @@ class BookByGglId(generics.RetrieveAPIView):
     lookup_field = 'googl_id'
     lookup_url_kwarg = 'id'
     # permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+class LibraryAPI(viewsets.ModelViewSet):
+    queryset = Library.objects.all()
+    serializer_class = LibrarySerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
 
