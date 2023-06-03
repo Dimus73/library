@@ -26,7 +26,7 @@ async function search40books(search){
 		str_q+= `&maxResults=${googleStep}`;
 
 		let response = await getDataFromAPI(str_q)
-		// console.log(response.items);
+		console.log(response.items);
 
 		for (i of response.items){
 			if (setOfBookObjects.length < lengthOfSet){
@@ -36,7 +36,7 @@ async function search40books(search){
 					author:i.volumeInfo.authors.join(', '),
 					age_range:'???',
 					img:i.volumeInfo.imageLinks.thumbnail,
-					googl_id:i.volumeInfo.id
+					googl_id:i.id
 				})
 				} catch (error) {
 					continue;

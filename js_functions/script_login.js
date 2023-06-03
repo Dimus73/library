@@ -33,7 +33,7 @@ async function requestPOST(url, dataObj={}, token=''){
 		}
 	} catch (error) {
 		console.log(error);
-    return 'Error conaction';
+    return 'Error connection';
   }
 
 }
@@ -66,6 +66,8 @@ let urls = {
 
 	getAllBooks:'http://127.0.0.1:8000/api/v1/book/',
 	addBook:'http://127.0.0.1:8000/api/v1/book/',
+
+	getAllAgeRange: 'http://127.0.0.1:8000/api/v1/age/'
 }
 
 
@@ -106,6 +108,7 @@ async function loginUserFunction(e){
 		console.log("Failed to login", userTOKEN.code, userTOKEN.text);
 	} else {
 		userTOKEN = userTOKEN.auth_token;
+		localStorage.setItem('token', userTOKEN);
 		console.log(userTOKEN);
 		divUser.textContent = username;
 		divToken.textContent = userTOKEN;
@@ -124,7 +127,9 @@ async function logoutUserFunction(e){
 	
 }
 
-//-----------------------------------------------
+// *********************************************
+// *********************************************
+// -----------Books
 async function getAllBooks(e){
 	e.preventDefault();
 
@@ -145,17 +150,51 @@ async function getAllBooks(e){
 	}
 }
 
+function clearBooksList(e){
+	e.preventDefault();
+	let listDiv = document.querySelector('#books_list')
+	listDiv.textContent = '';
+
+}
+
 async function addBook(e){
 	e.preventDefault();
+	let form=document.forms['add_book'];
+	console.log(form);
 	let bookInfo={
-		title: "New book",
-		author: "Author1, Aut2",
-		// img: "http://127.0.0.1:8000/media/cat.jpeg",
-		googl_id: "khjgkf76",
+		title: form.elements.title.value,
+		author: form.elements.author.value,
+		img: form.elements.img.value,
+		googl_id: form.elements.googl_id.value,
 		actual: true,
-		age_range: 1
+		age_range: form.elements.age_range.value
 	}
-	res = await requestPOST (urls.addBook, bookInfo, userTOKEN);
+	let token=localStorage.getItem('token');
+	res = await requestPOST (urls.addBook, bookInfo, token);
 	console.log('Book added:', res);
+	form.elements.res.value = 'Book added: "'+ res.title + '"'
+}
+
+// *********************************************
+// *********************************************
+// -----------Age Range
+async function getAllAgeRange(e){
+	e.preventDefault();
+
+	let res = await requestGET(urls.getAllAgeRange);
+	console.log(res);
+	let ageRangeObj ={}
+	for (r of res){
+		ageRangeObj[r.range]=r.id;
+	}
+	console.log(ageRangeObj);
+	let select = document.querySelector('#age_range')
+	for (key in ageRangeObj){
+		let opt = document.createElement('option');
+		opt.setAttribute('value', ageRangeObj[key]);
+		opt.textContent = key;
+		select.appendChild(opt);
+	}
+	
 }
 
