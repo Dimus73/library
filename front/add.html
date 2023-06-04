@@ -121,6 +121,7 @@ async function search40books(search){
 		str_q+= `&maxResults=${googleStep}`;
 
 		let response = await getDataFromAPI(str_q)
+    
 		for (i of response.items){
 			if (setOfBookObjects.length < lengthOfSet){
 				try {
@@ -191,26 +192,38 @@ async function selectBook(event, index) {
 
       //check book in library
   
-    searcheByGoogleId(googl_id)
-
+    searcheByGoogleId(googl_id);
+    console.log(selectedBookObject )
+    
      }
-
+return selectedBookObject 
     }
  
-async function searcheByGoogleId(googl_id){
-  let bookNotFound = false;
+async function searcheByGoogleId(googl_id, selectedBookObject){
+    let bookNotFound = false;
   	let searcheID = googl_id;
     let listDiv = document.querySelector('#bookFormDiv')
     listDiv.innerHTML=''
     let res = await requestGET(urls.searchByGoogleID  + searcheID);
-    console.log('test', typeof(res));
       if (typeof(res)==='string') {
-      console.log ("NOOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
-      throw new Error("Book not found");
+      console.log ("NOOOOOOOOOOOOOOOOOOOOOOOOOOOOO", res);
+      console.log ("SELECT", selectedBookObject)
+          let html1 = `<h4 style="padding-left: 10px;"> We don't have this book in the library, please add your book</h4>
+              <form id="bookForm">
+              <input name="title" value="${selectedBookObject.title}" readonly>
+              <input name="author" value="${selectedBookObject.author}" readonly>
+              <input type="hidden" name="img" value="${selectedBookObject.img}">
+              <input type="hidden" name="googl_id" value="${selectedBookObject.googl_id}">
+              <input type="hidden" name="actual" value="true">
+              <input type="select" name="age_range" value="1">
+              <input name="comment" placeholder="Comments">
+              <button type="submit" id="sendbook">Add book</button>
+            </form>`;
+            console.log (html1)
+listDiv.innerHTML=html1
     }
     else {
-    html=`<h4 style="padding-left: 10px;"> We have such book in the library, but you can add your sample and comment</h4>
-
+    let html=`<h4 style="padding-left: 10px;"> We have such book in the library, but you can add your sample and comment</h4>
     <img src=${res.img} width='90px' style="padding-left: 10px; margin-bottom: 10px">
     <form id="bookForm">
                   <input name="title" value="${res.title}" readonly>
@@ -252,18 +265,6 @@ async function searcheByGoogleId(googl_id){
 
 
 
-
-
-    // html=`<h5> We have such book in the library, but you can add your sample and comment</h5>
-    //   <h5>${title}</h5>
-    //   <h6>${author}</h6>
-    //   <img src=${img} width='70px'>
-    //   <form id="bookForm">
-    //   <input name="comment"> 
-    //   <button type="submit" id="sendbook"> Add book </button>
-    //   </form> </div> `
-    //     }
-    // }
   //   //if request basa: no
   // const titleInput = document.getElementById('title');
   // const authorInput = document.getElementById('author');
