@@ -31,14 +31,18 @@
                 <p id="slogan">Expanding book access.</p>
             </div>
         </div>
-        <div id="stickcont">
+        <div class="stickcont">
             <div id="stick">
             </div>
         </div>
-        <div id="newbooks">
-            <!-- script -->
+
+        <div id="new">
+        <h3>Several new books</h3>
         </div>
-        <div id="stickcont">
+
+        <div id="newbooks">
+              </div>
+        <div class="stickcont">
             <div id="stick">
             </div>
         </div>
@@ -48,7 +52,7 @@
                 <button type="submit" onclick="searchBook">Search a book</button>
             </form>
          </div>
-         <div id="stickcont">
+         <div class="stickcont">
             <div id="stick">
             </div>
         </div>
@@ -57,6 +61,36 @@
         </div>
     </main>
     <script>
+
+let urls = {
+	createUser:'http://127.0.0.1:8000/api/v1/auth/users/',
+	loginUser:'http://127.0.0.1:8000/api/v1/auth/token/login/',
+	logoutUser: 'http://127.0.0.1:8000/api/v1/auth/token/logout/',
+
+	getAllBooks:'http://127.0.0.1:8000/api/v1/book/',
+	addBook:'http://127.0.0.1:8000/api/v1/book/',
+}
+
+async function requestGET(url, options={}){
+	const param = new URLSearchParams();
+	for (p in options){
+		param.append(p,options[p])
+	}
+	console.log('GET запрос:', url + '?' + param);
+	try {
+		res= await fetch(url + '?' + param);
+		console.log(res);
+		if (!res.ok){
+			return("Error in Get Request(dima)");
+		} else {
+			let res_Js = res.json();
+			return res_Js;
+		}
+	} catch (error) {
+		
+	}
+}
+
     function searchBook (event) {
         event.preventDefault();
         let form=document.querySelector('#search');
@@ -73,10 +107,36 @@
                     <h4> Owner: ${books.owner}</h4>
                     <h4> Owner: ${books.owner.ad}</h4>`
                                         }
-                                    )-
+                                    )
 
                             })
                 }
+
+
+
+//func to get books from base
+async function getAllBooks(e){
+    e.preventDefault();
+    //to get all books in our database
+	let res = await requestGET('http://127.0.0.1:8000/api/v1/book/');
+	// console.log(res);
+	let listDiv = document.querySelector('#newbooks')
+	listDiv.textContent='';
+	for (book of res){
+		let ul = document.createElement('ul');
+		for (t in book){
+			let li = document.createElement('li');
+			li.innerHTML = t +": <b>" + book[t] + '</b>'
+			ul.appendChild(li);
+		}
+		listDiv.appendChild(ul);
+		let hr = document.createElement('hr');
+		listDiv.appendChild(hr);
+	}
+}
+
+window.addEventListener("load", getAllBooks)
+
     </script>
 </body>
 </html>
