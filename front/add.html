@@ -28,23 +28,25 @@
                 <p id="slogan">Books that are worth sharing</p>
             </div>
         </div>
-        <div id="stickcont">
+        <div class="stickcont">
             <div id="stick">
             </div>
         </div> 
 
         <div id="search_form_add">
-            <h3>Start typing a title or author of the book here to choose the right version and get a full info about the book you'd like to add:
+            <h3>Type a title or author of the book to choose the right version and get a full info about the book you'd like to add:
              </h3>
              <form method="GET" id="search">
                 <input id="searchInput" name="search"> 
                 <button type="submit" onclick="searchGoogle(event)">Search a book</button>
               </form>
-        
+        <div id="bookFormDiv">
+        </div>
+        <div id="googleBooks">
+        </div>
+
          <form id="bookForm">
-            <div id="googleBooks">
-            </div>
-            <input name="comment"> 
+          <input name="comment"> 
             <select name="age">
                 <option>Select the age</option>
                 <option>0-1</option>
@@ -56,9 +58,43 @@
             </select>
             <button type="submit" id="sendbook"> Add book </button>
         </form> </div>
+            <div id="googleBooks">
+            </div>
+           
     </main>
 <script>
+let urls = {
+	createUser:        'http://127.0.0.1:8000/api/v1/auth/users/',
+	loginUser:         'http://127.0.0.1:8000/api/v1/auth/token/login/',
+	logoutUser:        'http://127.0.0.1:8000/api/v1/auth/token/logout/',
 
+	getAllBooks:       'http://127.0.0.1:8000/api/v1/book/',
+	addBook:           'http://127.0.0.1:8000/api/v1/book/',
+
+	getAllAgeRange:    'http://127.0.0.1:8000/api/v1/age/',
+
+	searchByGoogleID:  'http://127.0.0.1:8000/api/v1/ggl/',
+}
+
+async function requestGET(url, options={}){
+	const param = new URLSearchParams();
+	for (p in options){
+		param.append(p,options[p])
+	}
+	console.log('GET запрос:', url + '?' + param);
+	try {
+		res= await fetch(url + '?' + param);
+		console.log(res);
+		if (!res.ok){
+			return("Error in Get Request(dima)");
+		} else {
+			let res_Js = res.json();
+			return res_Js;
+		}
+	} catch (error) {
+		
+	}
+}
 // get versions from google
 let books = []
 async function getDataFromAPI(str_q){
@@ -71,7 +107,7 @@ async function getDataFromAPI(str_q){
 	}
 }
   
-// Get 40 books with image
+// Get books with image
 async function search40books(search){
 	let setOfBookObjects=[];
 	let lengthOfSet = 20;
@@ -85,6 +121,7 @@ async function search40books(search){
 		str_q+= `&maxResults=${googleStep}`;
 
 		let response = await getDataFromAPI(str_q)
+    
 		for (i of response.items){
 			if (setOfBookObjects.length < lengthOfSet){
 				try {
@@ -93,7 +130,7 @@ async function search40books(search){
 					author:i.volumeInfo.authors.join(', '),
 					age_range:'???',
 					img:i.volumeInfo.imageLinks.thumbnail,
-					googl_id:i.volumeInfo.id
+					googl_id:i.id
 				})
 				} catch (error) {
 					continue;
@@ -107,6 +144,7 @@ async function search40books(search){
 	return setOfBookObjects;
 
 }
+//search by input
 async function searchGoogle(event) {
   event.preventDefault();
   let input = document.querySelector('#searchInput');
@@ -117,7 +155,8 @@ async function searchGoogle(event) {
   div.innerHTML = '';
   idDiv = 0;
 
-  books.forEach((item, index) => {
+//show books
+books.forEach((item, index) => {
     const { title, author, img } = item;
     let html = `<div class="book" id="book${index}" onclick="selectBook(event, ${index})">
       <h5>${title}</h5>
@@ -132,26 +171,137 @@ async function searchGoogle(event) {
 let selectedBook = null;
 
 // book selection
-function selectBook(event, index) {
+async function selectBook(event, index) {
   if (selectedBook) {
     selectedBook.classList.remove('selected');
   }
 
-  let bookDiv = event.target.closest('.book');
-  bookDiv.classList.add('selected');
-  selectedBook = bookDiv;
-
-  let selectedBookObject = books[index]; // Access the book object using the index
+    let bookDiv = event.target.closest('.book');
+    bookDiv.classList.add('selected');
+    selectedBook = bookDiv;
+    let selectedBookObject = books[index]; // Access the book object using the div index
 
   if (selectedBookObject) {
-    // Access the desired properties from the book object
-    let title = selectedBookObject.title;
-    let author = selectedBookObject.author;
-    let ageRange = selectedBookObject.age_range;
-    let img = selectedBookObject.img;
-        }
+    // Access the properties from the book object
+      let title = selectedBookObject.title;
+      let author = selectedBookObject.author;
+      let age_range = selectedBookObject.age_range;
+      let img = selectedBookObject.img;
+      let googl_id=selectedBookObject.googl_id;
+      console.log(title, author, age_range, googl_id)
+
+      //check book in library
+  
+    searcheByGoogleId(googl_id);
+    console.log(selectedBookObject )
+    
+     }
+return selectedBookObject 
     }
-// Event listener for form submission
+ 
+async function searcheByGoogleId(googl_id, selectedBookObject){
+    let bookNotFound = false;
+  	let searcheID = googl_id;
+    let listDiv = document.querySelector('#bookFormDiv')
+    listDiv.innerHTML=''
+    let res = await requestGET(urls.searchByGoogleID  + searcheID);
+      if (typeof(res)==='string') {
+      console.log ("NOOOOOOOOOOOOOOOOOOOOOOOOOOOOO", res);
+      console.log ("SELECT", selectedBookObject)
+          let html1 = `<h4 style="padding-left: 10px;"> We don't have this book in the library, please add your book</h4>
+              <form id="bookForm">
+              <input name="title" value="${selectedBookObject.title}" readonly>
+              <input name="author" value="${selectedBookObject.author}" readonly>
+              <input type="hidden" name="img" value="${selectedBookObject.img}">
+              <input type="hidden" name="googl_id" value="${selectedBookObject.googl_id}">
+              <input type="hidden" name="actual" value="true">
+              <input type="select" name="age_range" value="1">
+              <input name="comment" placeholder="Comments">
+              <button type="submit" id="sendbook">Add book</button>
+            </form>`;
+            console.log (html1)
+listDiv.innerHTML=html1
+    }
+    else {
+    let html=`<h4 style="padding-left: 10px;"> We have such book in the library, but you can add your sample and comment</h4>
+    <img src=${res.img} width='90px' style="padding-left: 10px; margin-bottom: 10px">
+    <form id="bookForm">
+                  <input name="title" value="${res.title}" readonly>
+                  <input name="author" value="${res.author}" readonly>
+                  <input type="hidden" name="img" value="${res.img}">
+                  <input type="hidden" name="googl_id" value="${res.googl_id}">
+                  <input type="hidden" name="actual" value="true">
+                  <input type="hidden" name="age_range" value="${res.age_range}">
+                  <input name="comment" placeholder="Comments">
+                  <button type="submit" id="sendbook">Add book</button>
+                </form>`;
+
+   listDiv.innerHTML=html
+}
+  }
+   
+	// listDiv.textContent='';
+	// let ul = document.createElement('ul');
+	// for (t in res){
+	// 	let li = document.createElement('li');
+	// 	li.innerHTML = t +": <b>" + res[t] + '</b>'
+	// 	ul.appendChild(li);
+	// }
+	// listDiv.appendChild(ul);
+	// let hr = document.createElement('hr');
+	// listDiv.appendChild(hr);
+
+
+
+  //    }
+    
+
+
+
+
+
+   let bookFormplace=document.querySelector('#bookFormDiv')
+
+
+
+
+  //   //if request basa: no
+  // const titleInput = document.getElementById('title');
+  // const authorInput = document.getElementById('author');
+  // const idInput = document.getElementById('id');
+  // const imgInput = document.getElementById('img');
+  
+  // // Set the values of the form fields
+  // titleInput.value = data.title;
+  // authorInput.value = data.author;
+  // idInput.value = data.id;
+  // imgInput.value = data.img;
+
+  
+    // html=`<h5> We don't have this book in the library, please add your book</h5>
+    // <form id="bookFormFull">
+    //   <h5>${title}</h5>
+    //   <h6>${author}</h6>
+    //   <img src=${img} width='70px'>
+      
+    //     <select name="age">
+    //             <option>Select the age</option>
+    //             <option>0-1</option>
+    //             <option>1-2</option>
+    //             <option>2-6</option>
+    //             <option>6-12</option>
+    //             <option>12-16</option>
+    //             <option>Older</option>
+    //         </select>  
+    //   <input name="comment"> 
+    //   <button type="submit" id="sendbook"> Add book </button>
+    //   </form> </div> `
+    //     }
+
+
+
+
+// Event listener for addform submission
 document.querySelector('#bookForm').addEventListener('submit', function (event) {
   event.preventDefault();
 
@@ -162,26 +312,35 @@ document.querySelector('#bookForm').addEventListener('submit', function (event) 
   let ageSelect = document.querySelector('select[name="age"]');
   let selectedAge = ageSelect.value;
 
-  // Get the comment
+  // comment
   let commentInput = document.querySelector('input[name="comment"]');
   let comment = commentInput.value;
 
+  
   if (selectedBook) {
     let selectedBookObject = books.find((item, index) => index === parseInt(bookId.replace('book', '')));
 
     if (selectedBookObject) {
-      // Access the desired properties from the book object
+      // Access the properties from the book object
       let title = selectedBookObject.title;
       let author = selectedBookObject.author;
-      let ageRange = selectedAge;
+      let googl_id = selectedBookObject.googl_id
+      let age_range = selectedAge;
       let img = selectedBookObject.img;
       let commentText = comment;
 
+      let added_book={'title': title,
+      'author': author,
+      'age_range':  age_range,
+       'img':  img,
+       'googl_id': googl_id 
+    }
       console.log('Selected Book Title:', title);
       console.log('Selected Book Author:', author);
-      console.log('Selected Book Age Range:', ageRange);
+      console.log('Selected Book Age Range:', age_range);
       console.log('Selected Book Image:', img);
       console.log('Selected Book Comment:', commentText);
+      console.log('all book:', added_book);
     }
   }
 
