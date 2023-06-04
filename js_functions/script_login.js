@@ -1,6 +1,7 @@
 // Где-то в глобальной переменной нужно хронить токен пользователя - Это его идентификатор
 let userTOKEN=''
 let divUser = document.querySelector('#user');
+let divID =document.querySelector('#user_id');
 let divToken =document.querySelector('#token');
 
 // *****************
@@ -60,12 +61,20 @@ async function requestGET(url, options={}){
 // *****************
 
 let urls = {
-	createUser:'http://127.0.0.1:8000/api/v1/auth/users/',
-	loginUser:'http://127.0.0.1:8000/api/v1/auth/token/login/',
-	logoutUser: 'http://127.0.0.1:8000/api/v1/auth/token/logout/',
+	createUser:        'http://127.0.0.1:8000/api/v1/auth/users/',
+	// loginUser:         'http://127.0.0.1:8000/api/v1/auth/token/login/',
+	loginUser:         'http://127.0.0.1:8000/api/v1/auth/authenticate/',
+	logoutUser:        'http://127.0.0.1:8000/api/v1/auth/token/logout/',
+	currentUser:       'http://127.0.0.1:8000/api/v1/auth/users/me/',
 
-	getAllBooks:'http://127.0.0.1:8000/api/v1/book/',
-	addBook:'http://127.0.0.1:8000/api/v1/book/',
+	getAllBooks:       'http://127.0.0.1:8000/api/v1/book/',
+	addBook:           'http://127.0.0.1:8000/api/v1/book/',
+
+	getAllAgeRange:    'http://127.0.0.1:8000/api/v1/age/',
+
+	searchByGoogleID:  'http://127.0.0.1:8000/api/v1/ggl/',
+
+	addBookToLibrary:  'http://127.0.0.1:8000/api/v1/library/' 
 }
 
 
@@ -102,13 +111,15 @@ async function loginUserFunction(e){
 	
 	userTOKEN = await requestPOST(urls.loginUser, data)
 	console.log(typeof(userTOKEN), userTOKEN);
-	if (!('auth_token' in userTOKEN)){
+	if (!('token' in userTOKEN)){
 		console.log("Failed to login", userTOKEN.code, userTOKEN.text);
 	} else {
-		userTOKEN = userTOKEN.auth_token;
+		localStorage.setItem('token', userTOKEN.token);
+		localStorage.setItem('user_id', userTOKEN.id);
 		console.log(userTOKEN);
 		divUser.textContent = username;
-		divToken.textContent = userTOKEN;
+		divID.textContent = userTOKEN.id;
+		divToken.textContent = userTOKEN.token;
 	}
 }
 
@@ -124,7 +135,27 @@ async function logoutUserFunction(e){
 	
 }
 
-//-----------------------------------------------
+async function currentUserInfo(e){
+	e.preventDefault();
+	let token=localStorage.getItem('token');
+	res = await requestGET(urls.currentUser)
+	console.log(res);
+
+	let listDiv = document.querySelector('#user_info')
+	listDiv.textContent='';
+	let ul = document.createElement('ul');
+	for (t in res){
+		let li = document.createElement('li');
+		li.innerHTML = t +": <b>" + book[t] + '</b>'
+		ul.appendChild(li);
+	}
+	listDiv.appendChild(ul);
+
+}
+
+// *********************************************
+// *********************************************
+// -----------Books
 async function getAllBooks(e){
 	e.preventDefault();
 
@@ -158,4 +189,25 @@ async function addBook(e){
 	res = await requestPOST (urls.addBook, bookInfo, userTOKEN);
 	console.log('Book added:', res);
 }
+
+	
+// *********************************************
+// *********************************************
+// -----------Library
+async function addBookToLibrary(e){
+	e.preventDefault();
+	let form=document.forms['add_book_library'];
+	console.log(form);
+	let libraryInfo={
+		book: form.elements.bookid.value,
+		user: localStorage.getItem('user_id'),
+		comment: form.elements.comment.value,
+	}
+	form.elements.userid.value = localStorage.getItem('user_id');
+	let token=localStorage.getItem('token');
+	res = await requestPOST (urls.addBookToLibrary, libraryInfo, token);
+	console.log('Book added to library:', res);
+	form.elements.res.value = 'Book added to library'
+}
+
 

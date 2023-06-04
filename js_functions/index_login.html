@@ -13,22 +13,25 @@
 			margin: 20px;
 			padding: 10px;
 		}
-		#user_info{
+		#user_information{
 			display: inline-block;
 			position: fixed;
 			top:10px;
 			right: 10px;
 			border: 1px solid black;
 			padding: 10px;
-			width: 200px;
+			width: 20%;
 		}
 	</style>
 </head>
 <body>
 	<h1>Library API sample</h1>
-	<div id="user_info">
+	<div id="user_information">
 		<div>User:</div>
 		<div id="user"></div>
+		<br>
+		<div>ID:</div>
+		<dit id="user_id"></dit>
 		<br>
 		<div>Token:</div>
 		<dit id="token"></dit>
@@ -59,6 +62,20 @@
 			<!-- Current user: <h3 id="user"></h3> -->
 		</div>
   </div>
+
+	<div class="section">
+		<h2>Information on the current user</h2>
+		<h4>LOGIN:http://127.0.0.1:8000/api/v1/auth/users/me</h4>
+		<div>
+			<form action="" method="post">
+				<button onclick="currentUserInfo(event)">Current user info</button>
+			</form>
+			<div id="user_info">
+
+			</div>
+		</div>
+  </div>
+
 
 	<div class="section">
 		<h2>Get all books from Books</h2>
@@ -124,3 +141,20 @@
 		<script src="script_login.js"></script>
 </body>
 </html>
+
+
+<!-- Library -->
+<div class="section">
+	<h2>Add book to Lbrary</h2>
+	<h4>http://127.0.0.1:8000/api/v1/library/</h4>
+	<div>
+		<form action="" method="post" name="add_book_library">
+			Book id: <input type="text" name="bookid">
+			User id: <input type="text" name="userid" readonly>
+			Comments: <input type="text" name="comment">
+			<button onclick="addBookToLibrary(event)">Add book to library</button>
+			<br>
+			RESALT: <input type="text" readonly name="res" style="width: 80%;">
+		</form>
+	</div>
+</div>
