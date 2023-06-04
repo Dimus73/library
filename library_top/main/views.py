@@ -5,7 +5,7 @@ from .models import Age_range, Books, Library
 from django.shortcuts import render
 from django.views.generic import CreateView, ListView
 from rest_framework import generics, viewsets, permissions
-from .serializers import BooksSerializer, Age_rangeSerializer, BoobByGglIdSerializer, LibrarySerializer
+from .serializers import BooksSerializer, Age_rangeSerializer, BoobByGglIdSerializer, LibraryListSerializer
 
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
@@ -52,9 +52,9 @@ class BookByGglId(generics.RetrieveAPIView):
     lookup_url_kwarg = 'id'
     # permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-class LibraryAPI(viewsets.ModelViewSet):
+class LibraryListAPI(generics.ListAPIView):
     queryset = Library.objects.all()
-    serializer_class = LibrarySerializer
+    serializer_class = LibraryListSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
 
