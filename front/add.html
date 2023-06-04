@@ -67,12 +67,9 @@ let urls = {
 	createUser:        'http://127.0.0.1:8000/api/v1/auth/users/',
 	loginUser:         'http://127.0.0.1:8000/api/v1/auth/token/login/',
 	logoutUser:        'http://127.0.0.1:8000/api/v1/auth/token/logout/',
-
 	getAllBooks:       'http://127.0.0.1:8000/api/v1/book/',
 	addBook:           'http://127.0.0.1:8000/api/v1/book/',
-
 	getAllAgeRange:    'http://127.0.0.1:8000/api/v1/age/',
-
 	searchByGoogleID:  'http://127.0.0.1:8000/api/v1/ggl/',
 }
 
@@ -150,7 +147,7 @@ async function searchGoogle(event) {
   let input = document.querySelector('#searchInput');
   let search = input.value;
   books = await search40books(search); 
-  console.log(books);
+  // console.log(books);
   let div = document.querySelector('#googleBooks');
   div.innerHTML = '';
   idDiv = 0;
@@ -166,16 +163,15 @@ books.forEach((item, index) => {
 
     div.innerHTML += html;
     idDiv++;
-  });
-}
-let selectedBook = null;
+                              });
+                              }
 
+let selectedBook = null;
 // book selection
 async function selectBook(event, index) {
   if (selectedBook) {
     selectedBook.classList.remove('selected');
   }
-
     let bookDiv = event.target.closest('.book');
     bookDiv.classList.add('selected');
     selectedBook = bookDiv;
@@ -188,32 +184,26 @@ async function selectBook(event, index) {
       let age_range = selectedBookObject.age_range;
       let img = selectedBookObject.img;
       let googl_id=selectedBookObject.googl_id;
-      console.log(title, author, age_range, googl_id)
-
-      //check book in library
-  
-    searcheByGoogleId(googl_id);
-    console.log(selectedBookObject )
-    
-     }
-return selectedBookObject 
-    }
+      console.log("Selected", title, author, age_range, googl_id)
+      searcheByGoogleId(title, author, age_range, googl_id, img)
+       }
+      }
  
-async function searcheByGoogleId(googl_id, selectedBookObject){
+async function searcheByGoogleId(title, author, age_range, googl_id, img){
     let bookNotFound = false;
   	let searcheID = googl_id;
     let listDiv = document.querySelector('#bookFormDiv')
     listDiv.innerHTML=''
     let res = await requestGET(urls.searchByGoogleID  + searcheID);
       if (typeof(res)==='string') {
+      
       console.log ("NOOOOOOOOOOOOOOOOOOOOOOOOOOOOO", res);
-      console.log ("SELECT", selectedBookObject)
-          let html1 = `<h4 style="padding-left: 10px;"> We don't have this book in the library, please add your book</h4>
+              let html1 = `<h4 style="padding-left: 10px;"> We don't have this book in the library, please add your book</h4>
               <form id="bookForm">
-              <input name="title" value="${selectedBookObject.title}" readonly>
-              <input name="author" value="${selectedBookObject.author}" readonly>
-              <input type="hidden" name="img" value="${selectedBookObject.img}">
-              <input type="hidden" name="googl_id" value="${selectedBookObject.googl_id}">
+              <input name="title" value="${title}" readonly>
+              <input name="author" value="${author}" readonly>
+              <input type="hidden" name="img" value="${img}">
+              <input type="hidden" name="googl_id" value="${googl_id}">
               <input type="hidden" name="actual" value="true">
               <input type="select" name="age_range" value="1">
               <input name="comment" placeholder="Comments">
@@ -223,6 +213,8 @@ async function searcheByGoogleId(googl_id, selectedBookObject){
 listDiv.innerHTML=html1
     }
     else {
+
+
     let html=`<h4 style="padding-left: 10px;"> We have such book in the library, but you can add your sample and comment</h4>
     <img src=${res.img} width='90px' style="padding-left: 10px; margin-bottom: 10px">
     <form id="bookForm">
@@ -301,55 +293,55 @@ listDiv.innerHTML=html1
 
 
 
-// Event listener for addform submission
-document.querySelector('#bookForm').addEventListener('submit', function (event) {
-  event.preventDefault();
+// // Event listener for addform submission
+// document.querySelector('#bookForm').addEventListener('submit', function (event) {
+//   event.preventDefault();
 
-  // Get the selected book ID
-  let bookId = selectedBook ? selectedBook.id : null;
+//   // Get the selected book ID
+//   let bookId = selectedBook ? selectedBook.id : null;
 
-  // Get the selected age
-  let ageSelect = document.querySelector('select[name="age"]');
-  let selectedAge = ageSelect.value;
+//   // Get the selected age
+//   let ageSelect = document.querySelector('select[name="age"]');
+//   let selectedAge = ageSelect.value;
 
-  // comment
-  let commentInput = document.querySelector('input[name="comment"]');
-  let comment = commentInput.value;
+//   // comment
+//   let commentInput = document.querySelector('input[name="comment"]');
+//   let comment = commentInput.value;
 
   
-  if (selectedBook) {
-    let selectedBookObject = books.find((item, index) => index === parseInt(bookId.replace('book', '')));
+//   if (selectedBook) {
+//     let selectedBookObject = books.find((item, index) => index === parseInt(bookId.replace('book', '')));
 
-    if (selectedBookObject) {
-      // Access the properties from the book object
-      let title = selectedBookObject.title;
-      let author = selectedBookObject.author;
-      let googl_id = selectedBookObject.googl_id
-      let age_range = selectedAge;
-      let img = selectedBookObject.img;
-      let commentText = comment;
+//     if (selectedBookObject) {
+//       // Access the properties from the book object
+//       let title = selectedBookObject.title;
+//       let author = selectedBookObject.author;
+//       let googl_id = selectedBookObject.googl_id
+//       let age_range = selectedAge;
+//       let img = selectedBookObject.img;
+//       let commentText = comment;
 
-      let added_book={'title': title,
-      'author': author,
-      'age_range':  age_range,
-       'img':  img,
-       'googl_id': googl_id 
-    }
-      console.log('Selected Book Title:', title);
-      console.log('Selected Book Author:', author);
-      console.log('Selected Book Age Range:', age_range);
-      console.log('Selected Book Image:', img);
-      console.log('Selected Book Comment:', commentText);
-      console.log('all book:', added_book);
-    }
-  }
+//       let added_book={'title': title,
+//       'author': author,
+//       'age_range':  age_range,
+//        'img':  img,
+//        'googl_id': googl_id 
+//     }
+//       console.log('Selected Book Title:', title);
+//       console.log('Selected Book Author:', author);
+//       console.log('Selected Book Age Range:', age_range);
+//       console.log('Selected Book Image:', img);
+//       console.log('Selected Book Comment:', commentText);
+//       console.log('all book:', added_book);
+//     }
+//   }
 
-  // Reset the form values
-  selectedBook = null;
-  bookId = null;
-  ageSelect.value = '';
-  commentInput.value = '';
-});
+//   // Reset the form values
+//   selectedBook = null;
+//   bookId = null;
+//   ageSelect.value = '';
+//   commentInput.value = '';
+// });
 
 </script>
 
