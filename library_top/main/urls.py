@@ -16,7 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include, re_path
-from .views import Book_Add, BooksList, homepage, BooksApi, Age_rangeApi, BookByGglId, CustomObtainAuthToken, LibraryListAPI
+from .views import Book_Add, BooksList, homepage, BooksApi, Age_rangeApi, BookByGglId 
+from .views import CustomObtainAuthToken, LibraryListAPI, UserProfileView
 from rest_framework import routers
 # from django.conf.urls import url
 
@@ -38,13 +39,14 @@ urlpatterns = [
     path('api/v1/auth/',   include('djoser.urls')),
     path('api/v1/auth/',   include('djoser.urls.authtoken')),
     path('api/v1/auth/authenticate/', CustomObtainAuthToken.as_view()),
+    path('api/v1/profile', UserProfileView.as_view()),
 
     path('api/v1/',        include(router.urls)),   
     path('api/v1/age/',    Age_rangeApi.as_view()),
     path('api/v1/ggl/<str:id>', BookByGglId.as_view()),
 
     # path('api/v1/',     include(routerLbr.urls)),
-    path('api/v1/librery/list', LibraryListAPI.as_view())
+    path('api/v1/library/list', LibraryListAPI.as_view())
     # path('bookadd/',       Book_Add.as_view(), name='bookadd_path'),
 
 ]
