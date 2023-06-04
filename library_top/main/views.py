@@ -1,11 +1,12 @@
 from django.forms import fields
 from django.urls import reverse_lazy
 from django.views import generic
-from .models import Age_range, Books, Library
+from .models import Age_range, Books, Library, UserProfile
 from django.shortcuts import render
 from django.views.generic import CreateView, ListView
 from rest_framework import generics, viewsets, permissions
 from .serializers import BooksSerializer, Age_rangeSerializer, BoobByGglIdSerializer, LibraryListSerializer
+from rest_framework.views import APIView
 
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
@@ -52,9 +53,31 @@ class BookByGglId(generics.RetrieveAPIView):
     lookup_url_kwarg = 'id'
     # permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
+
 class LibraryListAPI(generics.ListAPIView):
     queryset = Library.objects.all()
     serializer_class = LibraryListSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
 
+class UserProfileView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def post (self, request):
+        print("Мы в профиле пользователя",request.data)
+        try:
+            profile_info = request.data
+            user = request.user
+            user_profile, created = UserProfile.objects.get_or_create(user=user)
+            user_profile.first_name    = profile_info['first_name']
+            user_profile.last_name     = profile_info['last_name']
+            user_profile.email         = profile_info['Email']
+            user_profile.phone         = profile_info['phone']
+            user_profile.city          = profile_info['city']
+            user_profile.address       = profile_info['address']
+            user_profile.geo_latitudes = profile_info['geo_latitudes']
+            user_profile.geo_longitude = profile_info['geo_longitude']
+            user_profile.save()
+            return Response ({'message':'User profile created successfully'})
+        except:
+            return Response ({'message':'Error creating user profile'})
