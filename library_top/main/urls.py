@@ -16,15 +16,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include, re_path
-from .views import Book_Add, BooksList, homepage, BooksApi, Age_rangeApi, BookByGglId, CustomObtainAuthToken, LibraryAPI
+from .views import Book_Add, BooksList, homepage, BooksApi, Age_rangeApi, BookByGglId, CustomObtainAuthToken, LibraryListAPI
 from rest_framework import routers
 # from django.conf.urls import url
 
 
 router = routers.SimpleRouter()
 router.register(r'book', BooksApi)
-routerLbr = routers.SimpleRouter()
-routerLbr.register(r'library', LibraryAPI)
+# routerLbr = routers.SimpleRouter()
+# routerLbr.register(r'library', LibraryAPI)
 
 
 urlpatterns = [
@@ -43,7 +43,8 @@ urlpatterns = [
     path('api/v1/age/',    Age_rangeApi.as_view()),
     path('api/v1/ggl/<str:id>', BookByGglId.as_view()),
 
-    path('api/v1/',     include(routerLbr.urls)),
+    # path('api/v1/',     include(routerLbr.urls)),
+    path('api/v1/librery/list', LibraryListAPI.as_view())
     # path('bookadd/',       Book_Add.as_view(), name='bookadd_path'),
 
 ]

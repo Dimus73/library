@@ -23,7 +23,7 @@ class BooksSerializer(serializers.ModelSerializer):
         model = Books
         fields = '__all__'
 
-class LibrarySerializer(serializers.ModelSerializer):
+class LibraryListSerializer(serializers.ModelSerializer):
     book = BooksSerializer ()
     class Meta:
         model = Library
