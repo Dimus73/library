@@ -5,7 +5,7 @@ from .models import Age_range, Books, Library, UserProfile
 from django.shortcuts import render
 from django.views.generic import CreateView, ListView
 from rest_framework import generics, viewsets, permissions
-from .serializers import BooksSerializer, Age_rangeSerializer, BoobByGglIdSerializer, LibraryListSerializer
+from .serializers import BooksSerializer, Age_rangeSerializer, BoobByGglIdSerializer, LibraryListSerializer, LibraryAddSerializer
 from rest_framework.views import APIView
 
 from rest_framework.authtoken.views import ObtainAuthToken
@@ -59,6 +59,11 @@ class LibraryListAPI(generics.ListAPIView):
     serializer_class = LibraryListSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
+class LibraryCreateAPI(generics.CreateAPIView):
+    queryset = Library.objects.all()
+    serializer_class = LibraryAddSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
 
 class UserProfileView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -78,6 +83,6 @@ class UserProfileView(APIView):
             user_profile.geo_latitudes = profile_info['geo_latitudes']
             user_profile.geo_longitude = profile_info['geo_longitude']
             user_profile.save()
-            return Response ({'message':'User profile created successfully'})
+            return Response ({'ok':True, 'user_profile_id':user_profile.id, 'message':'User profile created successfully'})
         except:
-            return Response ({'message':'Error creating user profile'})
+            return Response ({'ok':False, 'message':'Error creating user profile'})

@@ -36,9 +36,14 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 class LibraryListSerializer(serializers.ModelSerializer):
     book = BooksSerializer ()
-    user = UserSerializer ()
+    user = UserProfileSerializer ()
     class Meta:
         model = Library
         fields = '__all__'
 
+
+class LibraryAddSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Library
+        fields = '__all__'
 

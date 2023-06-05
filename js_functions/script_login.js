@@ -3,6 +3,7 @@ let userTOKEN=''
 let divUser = document.querySelector('#user');
 let divID =document.querySelector('#user_id');
 let divToken =document.querySelector('#token');
+let divUserProfileID =document.querySelector('#user_profile_id');
 
 
 const profileFialds = {
@@ -105,7 +106,8 @@ let urls = {
 
 	searchByGoogleID:  'http://127.0.0.1:8000/api/v1/ggl/',
 
-	addBookToLibrary:  'http://127.0.0.1:8000/api/v1/library/' 
+	addBookToLibrary:  'http://127.0.0.1:8000/api/v1/library/', 
+	allBooksInLibrary: 'http://127.0.0.1:8000/api/v1/library/list' 
 }
 
 
@@ -139,8 +141,16 @@ async function addUserFunction(e){
 			for (i in profileFialds){
 				data[i]=form[i].value;
 			}
+			data['geo_latitudes'] = data['geo_latitudes'] == '' ? 0: data['geo_latitudes']
+			data['geo_longitude'] = data['geo_longitude'] == '' ? 0: data['geo_longitude']
+			
+
 			resp = await requestPOST(urls.createProfile, data, localStorage.getItem('token'))
 			console.log('After creating a profile',resp);
+			if (resp.ok){
+				localStorage.setItem('user_profile_id', resp.user_profile_id);
+				divUserProfileID.textContent = resp.user_profile_id;
+			}
 		}
 	}
 
@@ -340,4 +350,30 @@ async function addBookToLibrary(e){
 	form.elements.res.value = 'Book added to library'
 }
 
+//All books in the librari
+async function allBooksInLibrary(e){
+	e.preventDefault();
+	let res = await requestGET(urls.getAllBooks);
+	console.log(res);
+	let listDiv = document.querySelector('#books_list')
+	listDiv.textContent='';
+	for (book of res){
+		let ul = document.createElement('ul');
+		for (t in book){
+			let li = document.createElement('li');
+			li.innerHTML = t +": <b>" + book[t] + '</b>'
+			ul.appendChild(li);
+		}
+		listDiv.appendChild(ul);
+		let hr = document.createElement('hr');
+		listDiv.appendChild(hr);
+	}
+}
+
+function clearLibraryBooksList(e){
+	e.preventDefault();
+	let listDiv = document.querySelector('#books_list')
+	listDiv.textContent = '';
+
+}
 
