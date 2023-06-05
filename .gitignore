@@ -1,5 +1,5 @@
 lb_env
 *.pyc
-db.sqlite3
 /env
-
+/library_top/db.sqlite3
+db.sqlite3
