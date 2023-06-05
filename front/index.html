@@ -61,16 +61,49 @@
         </div>
     </main>
     <script>
+let userTOKEN=''
+let divUser = document.querySelector('#user');
+let divID =document.querySelector('#user_id');
+let divToken =document.querySelector('#token');
+let divUserProfileID =document.querySelector('#user_profile_id');
 
-let urls = {
-	createUser:'http://127.0.0.1:8000/api/v1/auth/users/',
-	loginUser:'http://127.0.0.1:8000/api/v1/auth/token/login/',
-	logoutUser: 'http://127.0.0.1:8000/api/v1/auth/token/logout/',
 
-	getAllBooks:'http://127.0.0.1:8000/api/v1/book/',
-	addBook:'http://127.0.0.1:8000/api/v1/book/',
+// Basic Function Post Request
+async function requestPOST(url, dataObj={}, token=''){
+	let requestData={
+		method:'POST',
+		headers:{
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify(dataObj)
+	}
+
+	console.log(requestData);
+	
+	if (token != ''){
+		requestData.headers.Authorization = ("Token " + token);
+	}
+	console.log(requestData);
+
+	try{
+		let res = await fetch(url,requestData);
+		console.log(res);
+		if (res.ok){
+			let resData = await res.json();
+			return resData;
+		} else {
+			console.log('----', res.ok, res.status, res.statusText);
+      // throw new Error("The server returned an error");
+			return {code:res.status, text:res.statusText, ok:res.ok}
+		}
+	} catch (error) {
+		console.log(error);
+    return 'Error connection';
+  }
+
 }
 
+// Basic Function Get Request
 async function requestGET(url, options={}){
 	const param = new URLSearchParams();
 	for (p in options){
@@ -90,50 +123,76 @@ async function requestGET(url, options={}){
 		
 	}
 }
+// *****************
 
-    function searchBook (event) {
-        event.preventDefault();
-        let form=document.querySelector('#search');
-        let question=event.value;
-        fetch ('https//?' + question)
-        .then(res => res.json())
-            .then(data => {console.log(data.books);
-                data.books.foreEach((id)=> {
-                console.log(books)
-                html=`
-                    <h3> Title: ${books.title} </h3>
-                    <h4> Author:${books.author} </h4>
-                    <h4> Comments:${books.comments}</h4>
-                    <h4> Owner: ${books.owner}</h4>
-                    <h4> Owner: ${books.owner.ad}</h4>`
-                                        }
-                                    )
+// API address list
+let urls = {
+	createUser:        'http://127.0.0.1:8000/api/v1/auth/users/',
+	loginUser:         'http://127.0.0.1:8000/api/v1/auth/authenticate/',
+	logoutUser:        'http://127.0.0.1:8000/api/v1/auth/token/logout/',
+	currentUser:       'http://127.0.0.1:8000/api/v1/auth/users/me/',
+	createProfile:     'http://127.0.0.1:8000/api/v1/profile',
+	getAllBooks:       'http://127.0.0.1:8000/api/v1/book/',
+	addBook:           'http://127.0.0.1:8000/api/v1/book/',
+	getAllAgeRange:    'http://127.0.0.1:8000/api/v1/age/',
+	searchByGoogleID:  'http://127.0.0.1:8000/api/v1/ggl/',
+	addBookToLibrary:  'http://127.0.0.1:8000/api/v1/library/', 
+	allBooksInLibrary: 'http://127.0.0.1:8000/api/v1/library/list' 
+}
 
-                            })
-                }
+
+let token=localStorage.getItem('token');
+if (token===null) {
+  console.log(token)
+}
+else {   let p = document.querySelector('#profile')
+        p.innerHTML= "<a href='logout.html'> Logout </a>"}
+
+
+
+    // function searchBook (event) {
+    //     event.preventDefault();
+    //     let form=document.querySelector('#search');
+    //     let question=event.value;
+    //     fetch ('https//?' + question)
+    //     .then(res => res.json())
+    //         .then(data => {console.log(data.books);
+    //             data.books.foreEach((id)=> {
+    //             console.log(books)
+    //             html=`
+    //                 <h3> Title: ${books.title} </h3>
+    //                 <h4> Author:${books.author} </h4>
+    //                 <h4> Comments:${books.comments}</h4>
+    //                 <h4> Owner: ${books.owner}</h4>
+    //                 <h4> Owner: ${books.owner.ad}</h4>`
+    //                                     }
+    //                                 )
+
+    //                         })
+    //             }
 
 
 
 //func to get books from base
 async function getAllBooks(e){
     e.preventDefault();
-    //to get all books in our database
 	let res = await requestGET('http://127.0.0.1:8000/api/v1/book/');
-	// console.log(res);
+	console.log(res);
 	let listDiv = document.querySelector('#newbooks')
-	listDiv.textContent='';
+	htmlAll='';
 	for (book of res){
-		let ul = document.createElement('ul');
-		for (t in book){
-			let li = document.createElement('li');
-			li.innerHTML = t +": <b>" + book[t] + '</b>'
-			ul.appendChild(li);
+        html=`<div class="newbookList"> 
+            <h5>Title: ${book.title}</h5>
+            <h6>Author: ${book.author}</h6>  
+            <img src='${book.img}' width='70px'>
+            </div>`
+        htmlAll+=html    
+
+		listDiv.innerHTML= htmlAll;
 		}
-		listDiv.appendChild(ul);
-		let hr = document.createElement('hr');
-		listDiv.appendChild(hr);
+			
 	}
-}
+
 
 window.addEventListener("load", getAllBooks)
 

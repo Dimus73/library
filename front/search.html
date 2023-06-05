@@ -24,32 +24,138 @@
             <img id="searchpic" src='searchs.jpg'> 
         </div>
     </div>
-        <div id="stickcont">
+        <div class="stickcont">
             <div id="stick">
             </div>
         </div>    
+        <div class="stickcont">
+            <h3> Which books would you like to find?</h3>
+        </div>
         <div id="search_form_add">
             <form method="GET" id="search">
-                          <input name="search"> 
-                          <select name="age">
-                            <option>Select the age</option>
-                            <option>0-1</option>
-                            <option>1-2</option>
-                            <option>2-6</option>
-                            <option>6-12</option>
-                            <option>12-16</option>
-                            <option>Older</option>
-                                                      </select>
-                <input name="comments"> Add your comments 
-                <button type="submit" onclick="searchBook(event)">Search a book</button>
+
             </form>
          </div>
-
+    
     </main>
     <script>
-function searchBook(event) {
-    fetch ('')
+let urls = {
+	createUser:        'http://127.0.0.1:8000/api/v1/auth/users/',
+	loginUser:         'http://127.0.0.1:8000/api/v1/auth/authenticate/',
+	logoutUser:        'http://127.0.0.1:8000/api/v1/auth/token/logout/',
+	currentUser:       'http://127.0.0.1:8000/api/v1/auth/users/me/',
+	createProfile:     'http://127.0.0.1:8000/api/v1/profile',
+	getAllBooks:       'http://127.0.0.1:8000/api/v1/book/',
+	addBook:           'http://127.0.0.1:8000/api/v1/book/',
+	getAllAgeRange:    'http://127.0.0.1:8000/api/v1/age/',
+	searchByGoogleID:  'http://127.0.0.1:8000/api/v1/ggl/',
+	addBookToLibrary:  'http://127.0.0.1:8000/api/v1/library/', 
+	allBooksInLibrary: 'http://127.0.0.1:8000/api/v1/library/list' 
 }
+// *****************
+let token=localStorage.getItem('token');
+;
+if (token===null) {
+  console.log(token)
+}
+else {   let p = document.querySelector('#profile')
+        p.innerHTML= "<a href='logout.html'> Logout </a>"}
+        
+// Basic Function Post Request
+async function requestPOST(url, dataObj={}, token=''){
+	let requestData={
+		method:'POST',
+		headers:{
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify(dataObj)
+	}
+
+	console.log(requestData);
+	
+	if (token != ''){
+		requestData.headers.Authorization = ("Token " + token);
+	}
+	console.log(requestData);
+
+	try{
+		let res = await fetch(url,requestData);
+		console.log(res);
+		if (res.ok){
+			let resData = await res.json();
+			return resData;
+		} else {
+			console.log('----', res.ok, res.status, res.statusText);
+    
+			return {code:res.status, text:res.statusText, ok:res.ok}
+		}
+	} catch (error) {
+		console.log(error);
+    return 'Error connection';
+  }
+
+}
+
+// Basic Function Get Request
+async function requestGET(url, options={}){
+	const param = new URLSearchParams();
+	for (p in options){
+		param.append(p,options[p])
+	}
+	console.log('GET запрос:', url + '?' + param);
+	try {
+		res= await fetch(url + '?' + param);
+		console.log(res);
+		if (!res.ok){
+			return("Error in Get Request(dima)");
+		} else {
+			let res_Js = res.json();
+			return res_Js;
+		}
+	} catch (error) {
+		
+	}
+}
+// *****************
+
+
+
+  window.addEventListener('DOMContentLoaded', async function() {
+  await createForm();
+});
+
+async function createForm() {
+    let form = document.querySelector('#search_form_add')
+    let html1_p1 = `
+              <form method="GET" id="search">
+              <input name="title" placeholder="Enter book title">
+              <input name="author" placeholder="Enter author name">`
+    let html1_p2 = `
+              <button type="submit" onclick="searchBook(event)">Search a book</button>
+            `;
+    let age = await getAllAgeRange();
+    let select = '<select name="age_range" id="age_range">'
+    for (a in age){
+      select += `<option value=${age[a]}>Age ${a}</option>`;
+    }
+    let html=html1_p1 + select + "</select>"+ html1_p2;
+    console.log(html)
+    form.innerHTML=html
+   }
+
+//ages for the form
+async function getAllAgeRange(){
+	let res = await requestGET(urls.getAllAgeRange);
+	let ageRangeObj ={}
+	for (r of res){
+		ageRangeObj[r.range]=r.id;
+	}
+  return ageRangeObj
+}
+
+// function searchBook(event) {
+//     fetch ('')
+// }
     </script>
 </body>
 </html>

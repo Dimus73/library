@@ -20,9 +20,23 @@
         </p>
       </header>
       <main id="content">
-    </main>
+        <div class="stickcont">
+<div class="description">
+  Welcome to our community home library! Here, we promote book sharing and connection among individuals. Our library allows members to borrow and lend books, fostering a vibrant literary community.
+<br>With a diverse collection of books contributed by our members, you'll find something for every taste and interest. Borrow a book and immerse yourself in its pages, returning it for others to enjoy.
+We encourage members to share their own books, expanding the collection and introducing fellow book lovers to new authors and stories.
+<br>Join us in our home library, where book enthusiasts come together, discuss their favorite reads, and forge new friendships. Let's create a thriving community united by the love of books.
+  </div>
+  </div>
+</main>
     <script>
-
+let token=localStorage.getItem('token');
+;
+if (token===null) {
+  console.log(token)
+}
+else {   let p = document.querySelector('#profile')
+        p.innerHTML= "<a href='logout.html'> Logout </a>"}
     </script>
 </body>
 </html>

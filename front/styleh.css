@@ -41,13 +41,17 @@ a {
     margin-top: 20px;
 
 }
-#new {
+#new, .description {
     margin-top: 10px; 
     margin-left: 20px;
     width: 200px;
     font-family: 'Roboto', sans-serif;
 }
-
+.description {
+   font-size: 22px;
+    width: 90%;
+  
+}
 #searchp {
     display: flex;
     align-items: center; 
@@ -105,8 +109,8 @@ a {
     margin-right: 20px;
 }
 
-#search_form_add{
-    padding-top: 20px;
+#search_form_add, #register_form{
+    padding-top: 10px;
     padding-left: 20px;
     display: flex;
     flex-direction: column;
@@ -155,4 +159,19 @@ form {
 
   #bookForm {
 margin-bottom: 20px;
+  }
+
+  input {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-family: 'Roboto', sans-serif;
+  }
+
+  button{
+    margin-bottom: 10px;
+  }
+
+  .newbookList{
+    width: 90px;
+    margin: 10px;
   }
