@@ -4,7 +4,35 @@ let divUser = document.querySelector('#user');
 let divID =document.querySelector('#user_id');
 let divToken =document.querySelector('#token');
 
+
+const profileFialds = {
+	Email:'Email ',
+	first_name:'First name: ',
+	last_name:'Last name: ',
+	phone:'Phone: ',
+	city:'City: ',
+	address:'Address: ',
+	geo_latitudes:'Geo latitudes: ',
+	geo_longitude:'Geo longitude: '
+}
+
+// Creating fields in the login/profile form
+let divProfile = document.getElementById('user_profile');
+for (i in profileFialds){
+	let newInputLable = document.createElement('lable')
+	newInputLable.for = i;
+	newInputLable.textContent = profileFialds[i];
+	let newInput = document.createElement('input');
+	newInput.name = i;
+	newInput.style.marginRight = '10px';
+	newInput.style.marginTop = '5px';
+	divProfile.appendChild(newInputLable);
+	divProfile.appendChild(newInput);
+}
+
+
 // *****************
+// Basic Function Post Request
 async function requestPOST(url, dataObj={}, token=''){
 	let requestData={
 		method:'POST',
@@ -30,7 +58,7 @@ async function requestPOST(url, dataObj={}, token=''){
 		} else {
 			console.log('----', res.ok, res.status, res.statusText);
       // throw new Error("The server returned an error");
-			return {code:res.status, text:res.statusText}
+			return {code:res.status, text:res.statusText, ok:res.ok}
 		}
 	} catch (error) {
 		console.log(error);
@@ -39,6 +67,7 @@ async function requestPOST(url, dataObj={}, token=''){
 
 }
 
+// Basic Function Get Request
 async function requestGET(url, options={}){
 	const param = new URLSearchParams();
 	for (p in options){
@@ -60,12 +89,14 @@ async function requestGET(url, options={}){
 }
 // *****************
 
+// API address list
 let urls = {
 	createUser:        'http://127.0.0.1:8000/api/v1/auth/users/',
 	// loginUser:         'http://127.0.0.1:8000/api/v1/auth/token/login/',
 	loginUser:         'http://127.0.0.1:8000/api/v1/auth/authenticate/',
 	logoutUser:        'http://127.0.0.1:8000/api/v1/auth/token/logout/',
 	currentUser:       'http://127.0.0.1:8000/api/v1/auth/users/me/',
+	createProfile:     'http://127.0.0.1:8000/api/v1/profile',
 
 	getAllBooks:       'http://127.0.0.1:8000/api/v1/book/',
 	addBook:           'http://127.0.0.1:8000/api/v1/book/',
@@ -78,31 +109,62 @@ let urls = {
 }
 
 
-
+// Add user function
 async function addUserFunction(e){
 	e.preventDefault();
-	let form = document.forms[0];
+	let form = document.forms['new_profile'].elements;
+	console.log(document.forms['new_profile'],document.forms['new_profile'].elements);
 	let username = form.un.value;
 	let password = form.pw.value;
-	let email = form.em.value;
+	let Email = form.Email.value;
 	
+// Create a user
 	let data = {
 		username,
 		password,
-		email
+		Email
 	}
 	console.log(data);
 	
 	resp = await requestPOST(urls.createUser, data);
-	console.log(userTOKEN);
+	console.log ('After creating a user',resp);
+
+	// If the user is created, log in with his login
+	if (!('ok' in resp)){ 
+		let log_res = await LoginUserFunction(username, password);
+
+		// If the user is login, create his profile
+		if (log_res){
+			data={};
+			for (i in profileFialds){
+				data[i]=form[i].value;
+			}
+			resp = await requestPOST(urls.createProfile, data, localStorage.getItem('token'))
+			console.log('After creating a profile',resp);
+		}
+	}
+
 }
 
-async function loginUserFunction(e){
+// Event Login function (button)
+async function eventLoginUserFunction(e){
 	e.preventDefault();
-	let form = document.forms[1];
+	let form = document.forms['login'].elements;
+
 	let username = form.un.value;
 	let password = form.pw.value;
+
+	await LoginUserFunction(username, password);
 	
+	divUser.textContent = username;
+	divID.textContent = localStorage.getItem('user_id');
+	divToken.textContent = localStorage.getItem('token');
+}
+
+
+// login function
+async function LoginUserFunction(username, password){
+
 	let data = {
 		username,
 		password
@@ -113,6 +175,7 @@ async function loginUserFunction(e){
 	console.log(typeof(userTOKEN), userTOKEN);
 	if (!('token' in userTOKEN)){
 		console.log("Failed to login", userTOKEN.code, userTOKEN.text);
+		return false
 	} else {
 		localStorage.setItem('token', userTOKEN.token);
 		localStorage.setItem('user_id', userTOKEN.id);
@@ -120,9 +183,13 @@ async function loginUserFunction(e){
 		divUser.textContent = username;
 		divID.textContent = userTOKEN.id;
 		divToken.textContent = userTOKEN.token;
+		return true
 	}
 }
 
+
+
+// Login function
 async function logoutUserFunction(e){
 		e.preventDefault();
 		console.log('*****User logout', userTOKEN);
@@ -156,6 +223,8 @@ async function currentUserInfo(e){
 // *********************************************
 // *********************************************
 // -----------Books
+
+// All books from books model
 async function getAllBooks(e){
 	e.preventDefault();
 
@@ -183,6 +252,7 @@ function clearBooksList(e){
 
 }
 
+//Add Book to Books model
 async function addBook(e){
 	e.preventDefault();
 	let form=document.forms['add_book'];
@@ -204,6 +274,7 @@ async function addBook(e){
 // *********************************************
 // *********************************************
 // -----------Age Range
+//get Age Range list
 async function getAllAgeRange(e){
 	e.preventDefault();
 
@@ -251,6 +322,8 @@ async function searcheByGooglId(e){
 // *********************************************
 // *********************************************
 // -----------Library
+
+//Add book to the library
 async function addBookToLibrary(e){
 	e.preventDefault();
 	let form=document.forms['add_book_library'];
