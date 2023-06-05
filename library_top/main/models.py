@@ -30,7 +30,7 @@ class Age_range(models.Model):
     
 class Library (models.Model):
     book      = models.ForeignKey(Books, on_delete=models.PROTECT)
-    user      = models.ForeignKey(User,on_delete=models.PROTECT)
+    user      = models.ForeignKey('UserProfile',on_delete=models.PROTECT)
     comment   = models.TextField(blank=True,null=True)
     addDate   = models.DateField(auto_now_add=True)
     def __str__ (self):
