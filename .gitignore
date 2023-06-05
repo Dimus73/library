@@ -3,3 +3,4 @@ lb_env
 /env
 /library_top/db.sqlite3
 db.sqlite3
+library_top/db.sqlite3

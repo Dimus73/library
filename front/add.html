@@ -341,29 +341,30 @@ async function addBook(e){
 		age_range: form.elements.age_range.value
 	}
 	let token=localStorage.getItem('token');
-	res = await requestPOST (urls.addBook, bookInfo, token);
+	let res = await requestPOST (urls.addBook, bookInfo, token);
 	console.log('Book added:', res);
   let div = document.querySelector('#googleBooks');
   div.innerHTML = '<h3>Book added</h3>';
   let listDiv = document.querySelector('#bookFormDiv')
   listDiv.innerHTML=''
-    form = document.querySelector('#search')
-    form.reset();
- 	let res1=addBookToLibrary(res)
+ 	await addBookToLibrary(res, form.elements.comment.value)
+  form = document.querySelector('#search')
+  form.reset();
 }
 
-async function addBookToLibrary(res){
-	console.log(form);
-	let libraryInfo={
+async function addBookToLibrary(res, comment){
+		let libraryInfo={
 		book: res.id,
-		user: localStorage.getItem('user_id'),
-		comment: form.elements.comment.value,
+		user: Number(localStorage.getItem('user_id')),
+		comment: comment,
 	}
-	form.elements.userid.value = localStorage.getItem('user_id');
+  console.log("libraryInfo",libraryInfo);
+	// form.elements.userid.value = localStorage.getItem('user_id');
 	let token=localStorage.getItem('token');
+  console.log("token", token);
 	res = await requestPOST (urls.addBookToLibrary, libraryInfo, token);
 	console.log('Book added to library:', res);
-	form.elements.res.value = 'Book added to library'
+	// form.elements.res.value = 'Book added to library'
 }
 
 
