@@ -189,10 +189,12 @@ async function LoginUserFunction(username, password){
 	} else {
 		localStorage.setItem('token', userTOKEN.token);
 		localStorage.setItem('user_id', userTOKEN.id);
+		localStorage.setItem('user_profile_id', userTOKEN.profile_id);
 		console.log(userTOKEN);
 		divUser.textContent = username;
 		divID.textContent = userTOKEN.id;
 		divToken.textContent = userTOKEN.token;
+		divUserProfileID.textContent = userTOKEN.profile_id;
 		return true
 	}
 }
