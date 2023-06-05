@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include, re_path
 from .views import Book_Add, BooksList, homepage, BooksApi, Age_rangeApi, BookByGglId 
-from .views import CustomObtainAuthToken, LibraryListAPI, UserProfileView
+from .views import CustomObtainAuthToken, LibraryListAPI, UserProfileView, LibraryCreateAPI
 from rest_framework import routers
 # from django.conf.urls import url
 
@@ -46,7 +46,8 @@ urlpatterns = [
     path('api/v1/ggl/<str:id>', BookByGglId.as_view()),
 
     # path('api/v1/',     include(routerLbr.urls)),
-    path('api/v1/library/list', LibraryListAPI.as_view())
+    path('api/v1/library/', LibraryCreateAPI.as_view()),
+    path('api/v1/library/list', LibraryListAPI.as_view()),
     # path('bookadd/',       Book_Add.as_view(), name='bookadd_path'),
 
 ]
