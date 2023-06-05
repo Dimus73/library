@@ -17,6 +17,8 @@
         <a href="news.html">News</a>
         <p id="profile">
           <a href="login.html">Login</a>/<a href="register.html">Register</a>
+
+          <button id="login" >LOG </button>
         </p>
       </header>
       <main id="content">
@@ -45,7 +47,7 @@
         <div id="googleBooks">
         </div>
 
-         <form id="bookForm">
+         <!-- <form id="bookForm">
           <input name="comment"> 
             <select name="age">
                 <option>Select the age</option>
@@ -57,7 +59,7 @@
                 <option>Older</option>
             </select>
             <button type="submit" id="sendbook"> Add book </button>
-        </form> </div>
+        </form> </div> -->
             <div id="googleBooks">
             </div>
            
@@ -65,13 +67,81 @@
 <script>
 let urls = {
 	createUser:        'http://127.0.0.1:8000/api/v1/auth/users/',
-	loginUser:         'http://127.0.0.1:8000/api/v1/auth/token/login/',
+	// loginUser:       'http://127.0.0.1:8000/api/v1/auth/token/login/',
+	loginUser:         'http://127.0.0.1:8000/api/v1/auth/authenticate/',
 	logoutUser:        'http://127.0.0.1:8000/api/v1/auth/token/logout/',
+	currentUser:       'http://127.0.0.1:8000/api/v1/auth/users/me/',
 	getAllBooks:       'http://127.0.0.1:8000/api/v1/book/',
 	addBook:           'http://127.0.0.1:8000/api/v1/book/',
 	getAllAgeRange:    'http://127.0.0.1:8000/api/v1/age/',
 	searchByGoogleID:  'http://127.0.0.1:8000/api/v1/ggl/',
+	addBookToLibrary:  'http://127.0.0.1:8000/api/v1/library/' 
 }
+document.getElementById('login').addEventListener('click', loginUserFunction);
+
+async function loginUserFunction(e){
+	e.preventDefault();
+
+	let data = {
+		'username':'user1',
+		'password':'123'
+	}
+	console.log(data);
+	
+	userTOKEN = await requestPOST(urls.loginUser, data)
+	console.log(typeof(userTOKEN), userTOKEN);
+	if (!('token' in userTOKEN)){
+		console.log("Failed to login", userTOKEN.code, userTOKEN.text);
+	} else {
+		localStorage.setItem('token', userTOKEN.token);
+		localStorage.setItem('user_id', userTOKEN.id);
+		console.log(userTOKEN);
+		divUser.textContent = username;
+		divID.textContent = userTOKEN.id;
+		divToken.textContent = userTOKEN.token;
+	}
+}
+
+//standart request
+async function requestPOST(url, dataObj={}, token=''){
+	let requestData={
+		method:'POST',
+		headers:{
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify(dataObj)
+	}
+
+	console.log(requestData);
+	
+	if (token != ''){
+		requestData.headers.Authorization = ("Token " + token);
+	}
+	console.log(requestData);
+
+	try{
+		let res = await fetch(url,requestData);
+		console.log(res);
+		if (res.ok){
+			let resData = await res.json();
+			return resData;
+		} else {
+			console.log('----', res.ok, res.status, res.statusText);
+      // throw new Error("The server returned an error");
+			return {code:res.status, text:res.statusText}
+		}
+	} catch (error) {
+		console.log(error);
+    return 'Error connection';
+  }
+
+}
+
+
+
+
+
+
 
 async function requestGET(url, options={}){
 	const param = new URLSearchParams();
@@ -147,7 +217,7 @@ async function searchGoogle(event) {
   let input = document.querySelector('#searchInput');
   let search = input.value;
   books = await search40books(search); 
-  // console.log(books);
+console.log(books);
   let div = document.querySelector('#googleBooks');
   div.innerHTML = '';
   idDiv = 0;
@@ -189,6 +259,7 @@ async function selectBook(event, index) {
        }
       }
  
+//search in library and create a form to add correspondingly
 async function searcheByGoogleId(title, author, age_range, googl_id, img){
     let bookNotFound = false;
   	let searcheID = googl_id;
@@ -198,26 +269,53 @@ async function searcheByGoogleId(title, author, age_range, googl_id, img){
       if (typeof(res)==='string') {
       
       console.log ("NOOOOOOOOOOOOOOOOOOOOOOOOOOOOO", res);
-              let html1 = `<h4 style="padding-left: 10px;"> We don't have this book in the library, please add your book</h4>
+      html1= await createForm(title, author, age_range, googl_id, img);
+      listDiv.innerHTML=html1
+      document.getElementById('bookForm').addEventListener('submit', addBook);
+    }
+      else {
+      html1= await createFormSmall(res);
+      listDiv.innerHTML=html1;
+      document.getElementById('bookForm').addEventListener('submit', addBook);
+}
+  }
+   //form creation for new book
+   async function createForm(title, author, age_range, googl_id, img) {
+    let html1_p1 = `<h4 style="padding-left: 10px;"> We don't have this book in the library, please add your book</h4>
               <form id="bookForm">
               <input name="title" value="${title}" readonly>
               <input name="author" value="${author}" readonly>
               <input type="hidden" name="img" value="${img}">
               <input type="hidden" name="googl_id" value="${googl_id}">
-              <input type="hidden" name="actual" value="true">
-              <input type="select" name="age_range" value="1">
-              <input name="comment" placeholder="Comments">
+              <input type="hidden" name="actual" value="true">`
+        let html1_p2 = `<input name="comment" placeholder="Comments">
               <button type="submit" id="sendbook">Add book</button>
             </form>`;
-            console.log (html1)
-listDiv.innerHTML=html1
+    let age = await getAllAgeRange();
+    let select = '<select name="age_range" id="age_range">'
+    for (a in age){
+      select += `<option value=${age[a]}>${a}</option> `;
     }
-    else {
+    html1_p1 += (select + html1_p2);
+      
+    return html1_p1
+   }
+//ages for the form
+async function getAllAgeRange(){
+	let res = await requestGET(urls.getAllAgeRange);
+	let ageRangeObj ={}
+	for (r of res){
+		ageRangeObj[r.range]=r.id;
+	}
+	console.log(ageRangeObj);
+  return ageRangeObj
+}
+//form creation for existing book
+async function createFormSmall(res) {
 
-
-    let html=`<h4 style="padding-left: 10px;"> We have such book in the library, but you can add your sample and comment</h4>
+  let html=`<h4 style="padding-left: 10px;"> We have such book in the library, but you can add your sample and comment</h4>
     <img src=${res.img} width='90px' style="padding-left: 10px; margin-bottom: 10px">
-    <form id="bookForm">
+    <form id='bookForm'>
                   <input name="title" value="${res.title}" readonly>
                   <input name="author" value="${res.author}" readonly>
                   <input type="hidden" name="img" value="${res.img}">
@@ -227,121 +325,48 @@ listDiv.innerHTML=html1
                   <input name="comment" placeholder="Comments">
                   <button type="submit" id="sendbook">Add book</button>
                 </form>`;
+                return html
+    }
 
-   listDiv.innerHTML=html
+// Event listener for addform submission
+async function addBook(e){
+	e.preventDefault();
+	let form=document.forms['bookForm'];
+	let bookInfo={
+		title: form.elements.title.value,
+		author: form.elements.author.value,
+		img: form.elements.img.value,
+		googl_id: form.elements.googl_id.value,
+		actual: true,
+		age_range: form.elements.age_range.value
+	}
+	let token=localStorage.getItem('token');
+	res = await requestPOST (urls.addBook, bookInfo, token);
+	console.log('Book added:', res);
+  let div = document.querySelector('#googleBooks');
+  div.innerHTML = '<h3>Book added</h3>';
+  let listDiv = document.querySelector('#bookFormDiv')
+  listDiv.innerHTML=''
+    form = document.querySelector('#search')
+    form.reset();
+ 	let res1=addBookToLibrary(res)
 }
-  }
-   
-	// listDiv.textContent='';
-	// let ul = document.createElement('ul');
-	// for (t in res){
-	// 	let li = document.createElement('li');
-	// 	li.innerHTML = t +": <b>" + res[t] + '</b>'
-	// 	ul.appendChild(li);
-	// }
-	// listDiv.appendChild(ul);
-	// let hr = document.createElement('hr');
-	// listDiv.appendChild(hr);
+
+async function addBookToLibrary(res){
+	console.log(form);
+	let libraryInfo={
+		book: res.id,
+		user: localStorage.getItem('user_id'),
+		comment: form.elements.comment.value,
+	}
+	form.elements.userid.value = localStorage.getItem('user_id');
+	let token=localStorage.getItem('token');
+	res = await requestPOST (urls.addBookToLibrary, libraryInfo, token);
+	console.log('Book added to library:', res);
+	form.elements.res.value = 'Book added to library'
+}
 
 
-
-  //    }
-    
-
-
-
-
-
-   let bookFormplace=document.querySelector('#bookFormDiv')
-
-
-
-
-  //   //if request basa: no
-  // const titleInput = document.getElementById('title');
-  // const authorInput = document.getElementById('author');
-  // const idInput = document.getElementById('id');
-  // const imgInput = document.getElementById('img');
-  
-  // // Set the values of the form fields
-  // titleInput.value = data.title;
-  // authorInput.value = data.author;
-  // idInput.value = data.id;
-  // imgInput.value = data.img;
-
-  
-    // html=`<h5> We don't have this book in the library, please add your book</h5>
-    // <form id="bookFormFull">
-    //   <h5>${title}</h5>
-    //   <h6>${author}</h6>
-    //   <img src=${img} width='70px'>
-      
-    //     <select name="age">
-    //             <option>Select the age</option>
-    //             <option>0-1</option>
-    //             <option>1-2</option>
-    //             <option>2-6</option>
-    //             <option>6-12</option>
-    //             <option>12-16</option>
-    //             <option>Older</option>
-    //         </select>  
-    //   <input name="comment"> 
-    //   <button type="submit" id="sendbook"> Add book </button>
-    //   </form> </div> `
-    //     }
-
-
-
-
-// // Event listener for addform submission
-// document.querySelector('#bookForm').addEventListener('submit', function (event) {
-//   event.preventDefault();
-
-//   // Get the selected book ID
-//   let bookId = selectedBook ? selectedBook.id : null;
-
-//   // Get the selected age
-//   let ageSelect = document.querySelector('select[name="age"]');
-//   let selectedAge = ageSelect.value;
-
-//   // comment
-//   let commentInput = document.querySelector('input[name="comment"]');
-//   let comment = commentInput.value;
-
-  
-//   if (selectedBook) {
-//     let selectedBookObject = books.find((item, index) => index === parseInt(bookId.replace('book', '')));
-
-//     if (selectedBookObject) {
-//       // Access the properties from the book object
-//       let title = selectedBookObject.title;
-//       let author = selectedBookObject.author;
-//       let googl_id = selectedBookObject.googl_id
-//       let age_range = selectedAge;
-//       let img = selectedBookObject.img;
-//       let commentText = comment;
-
-//       let added_book={'title': title,
-//       'author': author,
-//       'age_range':  age_range,
-//        'img':  img,
-//        'googl_id': googl_id 
-//     }
-//       console.log('Selected Book Title:', title);
-//       console.log('Selected Book Author:', author);
-//       console.log('Selected Book Age Range:', age_range);
-//       console.log('Selected Book Image:', img);
-//       console.log('Selected Book Comment:', commentText);
-//       console.log('all book:', added_book);
-//     }
-//   }
-
-//   // Reset the form values
-//   selectedBook = null;
-//   bookId = null;
-//   ageSelect.value = '';
-//   commentInput.value = '';
-// });
 
 </script>
 
