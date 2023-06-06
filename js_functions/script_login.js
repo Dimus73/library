@@ -44,8 +44,10 @@ async function requestPOST(url, dataObj={}, token=''){
 	}
 
 	console.log(requestData);
+	console.log('******TOKEN',token);
 	
 	if (token != ''){
+		console.log('******TOKEN 1111111', 'Token ' + token);
 		requestData.headers.Authorization = ("Token " + token);
 	}
 	console.log(requestData);
@@ -202,12 +204,13 @@ async function LoginUserFunction(username, password){
 
 
 
-// Login function
+// Logou function
 async function logoutUserFunction(e){
 		e.preventDefault();
-		console.log('*****User logout', userTOKEN);
+		let tempToken=localStorage.getItem("token")
+		console.log('***** In logout*****  User logout', tempToken);
 
-		let res = await requestPOST(urls.logoutUser, {}, userTOKEN);
+		let res = await requestPOST(urls.logoutUser, {}, tempToken);
 		console.log(typeof(res), res);
 
 		divUser.textContent = 'Undefined';
