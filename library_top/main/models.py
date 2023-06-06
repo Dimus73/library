@@ -34,7 +34,7 @@ class Library (models.Model):
     comment   = models.TextField(blank=True,null=True)
     addDate   = models.DateField(auto_now_add=True)
     def __str__ (self):
-        return f"{self.book.title} ovner {self.user.username}"
+        return f"{self.book.title} ovner {self.user.last_name}"
 
     
 class RentsBook (models.Model):
@@ -52,5 +52,5 @@ class UserProfile (models.Model):
     address = models.CharField(max_length=50, blank=True, null=True)
     geo_latitudes = models.FloatField(blank=True, null=True)
     geo_longitude = models.FloatField(blank=True, null=True)
-    def __str__ (self):
-        return f"Profile user: {self.user.username}"
+    # def __str__ (self):
+    #     return f"Profile user: {self.user.username}"
