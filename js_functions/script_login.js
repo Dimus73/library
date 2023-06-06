@@ -346,7 +346,7 @@ async function addBookToLibrary(e){
 	console.log(form);
 	let libraryInfo={
 		book: form.elements.bookid.value,
-		user: localStorage.getItem('user_id'),
+		user: localStorage.getItem('user_profile_id'),
 		comment: form.elements.comment.value,
 	}
 	form.elements.userid.value = localStorage.getItem('user_profile_id');
