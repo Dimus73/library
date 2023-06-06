@@ -38,9 +38,12 @@ class CustomObtainAuthToken(ObtainAuthToken):
     def post(self, request, *args, **kwargs):
         response = super(CustomObtainAuthToken, self).post(request, *args, **kwargs)
         token = Token.objects.get(key=response.data['token'])
-        profile = UserProfile.objects.get(user=token.user_id)
-        # print ('User profile:', profile.pk)
-        return Response({'token': token.key, 'id': token.user_id, 'profile_id':profile.pk})
+        try:
+            profile = UserProfile.objects.get(user=token.user_id)
+            profile_pk = profile.pk
+        except:
+            profile_pk = 0
+        return Response({'token': token.key, 'id': token.user_id, 'profile_id':profile_pk})
 
 class BooksApi(viewsets.ModelViewSet):
     queryset = Books.objects.all()
