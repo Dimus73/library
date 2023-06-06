@@ -30,13 +30,33 @@ We encourage members to share their own books, expanding the collection and intr
   </div>
 </main>
     <script>
+
+////login check
 let token=localStorage.getItem('token');
-;
-if (token===null) {
+console.log("**************** Dima",token);
+if (token==='') {
+  let p = document.querySelector('#profile')
+  p.innerHTML= '<a href="login.html">Login</a>/<a href="register.html">Register</a>'
   console.log(token)
 }
-else {   let p = document.querySelector('#profile')
-        p.innerHTML= "<a href='logout.html'> Logout </a>"}
+else {let p = document.querySelector('#profile')
+        p.innerHTML= "<a href='#' onclick='logoutUserFunction(event)'> Logout </a>"}
+/////
+
+// Logout function
+async function logoutUserFunction(e){
+		e.preventDefault();
+    let tmp=localStorage.getItem('token');
+    console.log('TMP', tmp);
+		console.log('*****User logout', tmp);
+    localStorage.setItem('token', '');
+		let res = await requestPOST(urls.logoutUser, {}, userTOKEN);
+		console.log(typeof(res), res);
+
+		// divUser.textContent = 'Undefined';
+		// divToken.textContent = '';
+	
+}
     </script>
 </body>
 </html>

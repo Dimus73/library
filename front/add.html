@@ -16,7 +16,7 @@
         <a href="about.html">About us</a>
         <a href="news.html">News</a>
         <p id="profile">
-          <a href="login.html">Login</a>/<a href="register.html">Register</a>
+          <!-- <a href="login.html">Login</a>/<a href="register.html">Register</a> -->
 
           <!-- <button id="login" >LOG </button> -->
         </p>
@@ -46,20 +46,6 @@
         </div>
         <div id="googleBooks">
         </div>
-
-         <!-- <form id="bookForm">
-          <input name="comment"> 
-            <select name="age">
-                <option>Select the age</option>
-                <option>0-1</option>
-                <option>1-2</option>
-                <option>2-6</option>
-                <option>6-12</option>
-                <option>12-16</option>
-                <option>Older</option>
-            </select>
-            <button type="submit" id="sendbook"> Add book </button>
-        </form> </div> -->
             <div id="googleBooks">
             </div>
            
@@ -77,39 +63,48 @@ let urls = {
 	addBookToLibrary:  'http://127.0.0.1:8000/api/v1/library/' 
 }
 
+let userTOKEN=''
+let divUser = document.querySelector('#user');
+let divID =document.querySelector('#user_id');
+let divToken =document.querySelector('#token');
+let divUserProfileID =document.querySelector('#user_profile_id');
+
+
 let token=localStorage.getItem('token');
-;
-if (token===null) {
+
+if (token==='') {
+  let p = document.querySelector('#profile')
+  p.innerHTML= '<a href="login.html">Login</a>/<a href="register.html">Register</a>'
   console.log(token)
 }
-else {   let p = document.querySelector('#profile')
-        p.innerHTML= "<a href='logout.html'> Logout </a>"}
+else {let p = document.querySelector('#profile')
+        p.innerHTML= "<a href='#' onclick='logoutUserFunction(event)'> Logout </a>"}
 
         
-// document.getElementById('login').addEventListener('click', loginUserFunction);
 
-async function loginUserFunction(e){
-	e.preventDefault();
+// async function loginUserFunction(e){
+// 	e.preventDefault();
 
-	let data = {
-		'username':'user1',
-		'password':'123'
-	}
-	console.log(data);
+// 	let data = {
+// 		'username':'user1',
+// 		'password':'123'
+// 	}
+// 	console.log(data);
 	
-	userTOKEN = await requestPOST(urls.loginUser, data)
-	console.log(typeof(userTOKEN), userTOKEN);
-	if (!('token' in userTOKEN)){
-		console.log("Failed to login", userTOKEN.code, userTOKEN.text);
-	} else {
-		localStorage.setItem('token', userTOKEN.token);
-		localStorage.setItem('user_id', userTOKEN.id);
-		console.log(userTOKEN);
-		divUser.textContent = username;
-		divID.textContent = userTOKEN.id;
-		divToken.textContent = userTOKEN.token;
-	}
-}
+// 	userTOKEN = await requestPOST(urls.loginUser, data)
+// 	console.log(typeof(userTOKEN), userTOKEN);
+// 	if (!('token' in userTOKEN)){
+// 		console.log("Failed to login", userTOKEN.code, userTOKEN.text);
+// 	} else {
+// 		localStorage.setItem('token', userTOKEN.token);
+// 		localStorage.setItem('user_id', userTOKEN.id);
+// 		console.log(userTOKEN);
+// 		divUser.textContent = username;
+// 		divID.textContent = userTOKEN.id;
+// 		divToken.textContent = userTOKEN.token;
+// 	}
+// }
+
 
 //standart request
 async function requestPOST(url, dataObj={}, token=''){
@@ -143,9 +138,7 @@ async function requestPOST(url, dataObj={}, token=''){
 		console.log(error);
     return 'Error connection';
   }
-
 }
-
 
 async function requestGET(url, options={}){
 	const param = new URLSearchParams();
@@ -237,8 +230,8 @@ books.forEach((item, index) => {
 
     div.innerHTML += html;
     idDiv++;
-                              });
-                              }
+      });
+     }
 
 let selectedBook = null;
 // book selection
@@ -359,7 +352,7 @@ async function addBook(e){
 async function addBookToLibrary(res, comment){
 		let libraryInfo={
 		book: res.id,
-		 user: 14,//Number(localStorage.getItem('user_id')),
+		user: Number(localStorage.getItem('user_profile_id')),
 		comment: comment,
 	}
   console.log("libraryInfo",libraryInfo);
@@ -372,6 +365,20 @@ async function addBookToLibrary(res, comment){
 }
 
 
+// Logout function
+async function logoutUserFunction(e){
+		e.preventDefault();
+    let tmp=localStorage.getItem('token');
+    console.log('TMP', tmp);
+		console.log('*****User logout', tmp);
+    localStorage.setItem('token', '');
+		let res = await requestPOST(urls.logoutUser, {}, userTOKEN);
+		console.log(typeof(res), res);
+
+		// divUser.textContent = 'Undefined';
+		// divToken.textContent = '';
+	
+}
 
 </script>
 

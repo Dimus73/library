@@ -141,36 +141,17 @@ let urls = {
 }
 
 
+////login check
 let token=localStorage.getItem('token');
-if (token===null) {
+
+if (token==='') {
+  let p = document.querySelector('#profile')
+  p.innerHTML= '<a href="login.html">Login</a>/<a href="register.html">Register</a>'
   console.log(token)
 }
-else {   let p = document.querySelector('#profile')
-        p.innerHTML= "<a href='logout.html'> Logout </a>"}
-
-
-
-    // function searchBook (event) {
-    //     event.preventDefault();
-    //     let form=document.querySelector('#search');
-    //     let question=event.value;
-    //     fetch ('https//?' + question)
-    //     .then(res => res.json())
-    //         .then(data => {console.log(data.books);
-    //             data.books.foreEach((id)=> {
-    //             console.log(books)
-    //             html=`
-    //                 <h3> Title: ${books.title} </h3>
-    //                 <h4> Author:${books.author} </h4>
-    //                 <h4> Comments:${books.comments}</h4>
-    //                 <h4> Owner: ${books.owner}</h4>
-    //                 <h4> Owner: ${books.owner.ad}</h4>`
-    //                                     }
-    //                                 )
-
-    //                         })
-    //             }
-
+else {let p = document.querySelector('#profile')
+        p.innerHTML= "<a href='#' onclick='logoutUserFunction(event)'> Logout </a>"}
+/////
 
 
 //func to get books from base
@@ -196,6 +177,20 @@ async function getAllBooks(e){
 
 window.addEventListener("load", getAllBooks)
 
+// Logout function
+async function logoutUserFunction(e){
+		e.preventDefault();
+    let tmp=localStorage.getItem('token');
+    console.log('TMP', tmp);
+		console.log('*****User logout', tmp);
+    localStorage.setItem('token', '');
+		let res = await requestPOST(urls.logoutUser, {}, userTOKEN);
+		console.log(typeof(res), res);
+
+		// divUser.textContent = 'Undefined';
+		// divToken.textContent = '';
+	
+}
     </script>
 </body>
 </html>
