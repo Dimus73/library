@@ -33,7 +33,7 @@
             <h3> Please, register to lend or borrow a book</h3>
         </div>
         <div id="new_profile">
-            <form method="POST" name="new_profile">
+            <form method="POST" name="new_profile1">
               <label for="login">Login:</label>
                 <input type="text" name="login" id="login" placeholder="Create login">
                 <br>
@@ -47,7 +47,7 @@
                 <input type="text" name="last_name" id="last_name" placeholder="Enter last name">
                 <br>
                 <label for="email">Email:</label>
-                <input type="email" name="email" id="email" placeholder="Enter email">
+                <input type="email" name="Email" id="email" placeholder="Enter email">
                 <br>
                 <label for="phone">Phone:</label>
                 <input type="tel" name="phone" id="phone" placeholder="Enter phone number">
@@ -117,11 +117,11 @@ else {let p = document.querySelector('#profile')
 async function logoutUserFunction(e){
 		e.preventDefault();
     let tmp=localStorage.getItem('token');
-    console.log('TMP', tmp);
+    // console.log('TMP', tmp);
 		console.log('*****User logout', tmp);
     localStorage.setItem('token', '');
 		let res = await requestPOST(urls.logoutUser, {}, userTOKEN);
-		console.log(typeof(res), res);
+		// console.log(typeof(res), res);
 
 		// divUser.textContent = 'Undefined';
 		// divToken.textContent = '';
@@ -139,16 +139,15 @@ async function requestPOST(url, dataObj={}, token=''){
 		body: JSON.stringify(dataObj)
 	}
 
-	console.log(requestData);
+	// console.log(requestData);
 	
 	if (token != ''){
 		requestData.headers.Authorization = ("Token " + token);
 	}
-	console.log(requestData);
-
+	// console.log(requestData);
 	try{
 		let res = await fetch(url,requestData);
-		console.log(res);
+		// console.log(res);
 		if (res.ok){
 			let resData = await res.json();
 			return resData;
@@ -185,14 +184,15 @@ async function requestGET(url, options={}){
 }
 // *****************
 
-  async function addUserFunction(e){
+async function addUserFunction(e){
 	e.preventDefault();
-	let form = document.forms['new_profile'].elements;
+	let form = document.forms['new_profile1'].elements;
 	// console.log(document.forms['new_profile'],document.forms['new_profile'].elements);
 	let username = form.login.value;
 	let password = form.password.value;
 	let email = form.email.value;
-  console.log(username, password, email) 
+
+    console.log(username, password, email) 
 	
 // Create a user
 	let data = {
@@ -200,20 +200,25 @@ async function requestGET(url, options={}){
 		password,
 		email
 	}
-	console.log(data);
+	console.log("*********Befor log in ",data);
 	resp = await requestPOST(urls.createUser, data);
 	console.log ('After creating a user',resp);
 
 	// If the user is created, log in with his login
 	if (!('ok' in resp)){ 
+		console.log("-------******--------");
 		let log_res = await LoginUserFunction(username, password);
-
+		console.log('AAAAAAAAAAAAAAAAAAA', log_res);
 		// If the user is login, create his profile
-		if (log_res){
+		if (log_res){			
 			data={};
+			console.log("form", form)
 			for (i in profileFialds){
+
 				data[i]=form[i].value;
+				console.log(i, form[i].value)
 			}
+
 			data['geo_latitudes'] = data['geo_latitudes'] == '' ? 0: data['geo_latitudes']
 			data['geo_longitude'] = data['geo_longitude'] == '' ? 0: data['geo_longitude']
 			
@@ -222,7 +227,6 @@ async function requestGET(url, options={}){
 			console.log('After creating a profile',resp);
 			if (resp.ok){
 				localStorage.setItem('user_profile_id', resp.user_profile_id);
-				divUserProfileID.textContent = resp.user_profile_id;
         let p = document.querySelector('#profile')
         p.innerHTML= "<a href='logout.html'> Logout </a>"
 			}
