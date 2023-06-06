@@ -92,22 +92,23 @@ async function requestGET(url, options={}){
 
 // API address list
 let urls = {
-	createUser:        'http://127.0.0.1:8000/api/v1/auth/users/',
-	// loginUser:         'http://127.0.0.1:8000/api/v1/auth/token/login/',
-	loginUser:         'http://127.0.0.1:8000/api/v1/auth/authenticate/',
-	logoutUser:        'http://127.0.0.1:8000/api/v1/auth/token/logout/',
-	currentUser:       'http://127.0.0.1:8000/api/v1/auth/users/me/',
-	createProfile:     'http://127.0.0.1:8000/api/v1/profile',
-
-	getAllBooks:       'http://127.0.0.1:8000/api/v1/book/',
-	addBook:           'http://127.0.0.1:8000/api/v1/book/',
-
-	getAllAgeRange:    'http://127.0.0.1:8000/api/v1/age/',
-
-	searchByGoogleID:  'http://127.0.0.1:8000/api/v1/ggl/',
-
-	addBookToLibrary:  'http://127.0.0.1:8000/api/v1/library/', 
-	allBooksInLibrary: 'http://127.0.0.1:8000/api/v1/library/list' 
+	createUser:           'http://127.0.0.1:8000/api/v1/auth/users/',
+	// loginUser:            'http://127.0.0.1:8000/api/v1/auth/token/login/',
+	loginUser:            'http://127.0.0.1:8000/api/v1/auth/authenticate/',
+	logoutUser:           'http://127.0.0.1:8000/api/v1/auth/token/logout/',
+	currentUser:          'http://127.0.0.1:8000/api/v1/auth/users/me/',
+	createProfile:        'http://127.0.0.1:8000/api/v1/profile',
+   
+	getAllBooks:          'http://127.0.0.1:8000/api/v1/book/',
+	addBook:              'http://127.0.0.1:8000/api/v1/book/',
+   
+	getAllAgeRange:       'http://127.0.0.1:8000/api/v1/age/',
+   
+	searchByGoogleID:     'http://127.0.0.1:8000/api/v1/ggl/',
+   
+	addBookToLibrary:     'http://127.0.0.1:8000/api/v1/library/', 
+	allBooksInLibrary:    'http://127.0.0.1:8000/api/v1/library/list',
+	searchBookInLibrary:  'http://127.0.0.1:8000/api/v1/library/search/'
 }
 
 
@@ -189,10 +190,12 @@ async function LoginUserFunction(username, password){
 	} else {
 		localStorage.setItem('token', userTOKEN.token);
 		localStorage.setItem('user_id', userTOKEN.id);
+		localStorage.setItem('user_profile_id', userTOKEN.profile_id);
 		console.log(userTOKEN);
 		divUser.textContent = username;
 		divID.textContent = userTOKEN.id;
 		divToken.textContent = userTOKEN.token;
+		divUserProfileID.textContent = userTOKEN.profile_id;
 		return true
 	}
 }
@@ -343,7 +346,7 @@ async function addBookToLibrary(e){
 		user: localStorage.getItem('user_id'),
 		comment: form.elements.comment.value,
 	}
-	form.elements.userid.value = localStorage.getItem('user_id');
+	form.elements.userid.value = localStorage.getItem('user_profile_id');
 	let token=localStorage.getItem('token');
 	res = await requestPOST (urls.addBookToLibrary, libraryInfo, token);
 	console.log('Book added to library:', res);
@@ -353,18 +356,29 @@ async function addBookToLibrary(e){
 //All books in the librari
 async function allBooksInLibrary(e){
 	e.preventDefault();
-	let res = await requestGET(urls.getAllBooks);
+	let res = await requestGET(urls.allBooksInLibrary);
 	console.log(res);
-	let listDiv = document.querySelector('#books_list')
+	let listDiv = document.querySelector('#library_books_list')
 	listDiv.textContent='';
-	for (book of res){
+	for (i of res){
+		
 		let ul = document.createElement('ul');
-		for (t in book){
+		for (b in i['book']){
 			let li = document.createElement('li');
-			li.innerHTML = t +": <b>" + book[t] + '</b>'
+			li.innerHTML = b +": <b>" + i['book'][b] + '</b>'
 			ul.appendChild(li);
 		}
 		listDiv.appendChild(ul);
+
+		ul = document.createElement('ul');
+		for (u in i['user']){
+			let li = document.createElement('li');
+			li.innerHTML = u +": <b>" + i['user'][u] + '</b>'
+			ul.appendChild(li);
+		}
+		listDiv.appendChild(ul);
+
+
 		let hr = document.createElement('hr');
 		listDiv.appendChild(hr);
 	}
@@ -372,8 +386,50 @@ async function allBooksInLibrary(e){
 
 function clearLibraryBooksList(e){
 	e.preventDefault();
-	let listDiv = document.querySelector('#books_list')
+	let listDiv = document.querySelector('#library_books_list')
 	listDiv.textContent = '';
 
 }
+
+// Search in the library of books for a user
+async function librarySearchBooks(e){
+	e.preventDefault();
+	let form=document.forms['search_books'].elements;
+	let title = form.title.value
+	let author = form.author.value
+	let age_range = form.age_range.value
+	let params = {
+		title,
+		author
+	}
+
+	let res = await requestGET(urls.searchBookInLibrary, params);
+	console.log(res);
+
+	let listDiv = document.querySelector('#search_book_list')
+	listDiv.textContent='';
+	for (i of res){
+		
+		let ul = document.createElement('ul');
+		for (b in i){
+			let li = document.createElement('li');
+			li.innerHTML = b +": <b>" + i[b] + '</b>'
+			ul.appendChild(li);
+		}
+		listDiv.appendChild(ul);
+
+		let hr = document.createElement('hr');
+		listDiv.appendChild(hr);
+	}
+}
+
+function clearSearchBooksList(e){
+	e.preventDefault();
+	let listDiv = document.querySelector('#search_book_list')
+	listDiv.textContent = '';
+
+}
+
+
+
 

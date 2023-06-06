@@ -164,3 +164,40 @@
 		</form>
 	</div>
 </div>
+
+
+<!-- Show all books in the library -->
+<div class="section">
+	<h2>Get all books from Library</h2>
+	<h4>http://127.0.0.1:8000/api/v1/library/list</h4>
+	<div>
+		<form action="" method="post">
+			<button onclick="allBooksInLibrary(event)">All books</button>
+			<button onclick="clearLibraryBooksList(event)">Clear books list</button>
+		</form>
+		<div id="library_books_list">
+			<!-- book list -->
+		</div>
+	</div>
+</div>
+
+
+<!-- Find books in the library -->
+<div class="section">
+	<h2>Search books in Library</h2>
+	<h4>http://127.0.0.1:8000/api/v1/library/</h4>
+	<div>
+		<form action="" method="post" name="search_books">
+			Book title: <input type="text" name="title">
+			Author name: <input type="text" name="author">
+			Age range: <input type="text" name="age_range">
+			<button onclick="librarySearchBooks(event)">Search</button>
+			<button onclick="clearSearchBooksList(event)">Clear books list</button>
+			<div id="search_book_list">
+
+			</div>
+			<br>
+		</form>
+	</div>
+</div>
+

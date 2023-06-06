@@ -47,3 +47,14 @@ class LibraryAddSerializer(serializers.ModelSerializer):
         model = Library
         fields = '__all__'
 
+
+
+class LibrarySeachBookSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    titel = serializers.CharField()
+    author = serializers.CharField()
+    img = serializers.CharField()
+    name = serializers.CharField()
+    addres = serializers.CharField()
+    phone = serializers.CharField()
+    email = serializers.CharField()
