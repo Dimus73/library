@@ -296,7 +296,7 @@ async function searcheByGoogleId(title, author, age_range, googl_id, img){
               <button type="submit" id="sendbook">Add book</button>
             </form>`;
     let age = await getAllAgeRange();
-    let select = '<select name="age_range" id="age_range">'
+    let select = '<select name="age_range" id="age_range"> <option value="">-- Select an option --</option>'
     for (a in age){
       select += `<option value=${age[a]}>${a}</option> `;
     }
