@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="styleh.css">
     <link href="https://fonts.googleapis.com/css2?family=Comic+Neue&family=Roboto&display=swap" rel="stylesheet">
-    <title>Common library</title>
+    <title>Common library. Login</title>
 </head>
 <body>
     <header>
@@ -20,8 +20,133 @@
         </p>
       </header>
       <main id="content">
+        <div id="searchp">
+            <img id="searchpic" src='login.jpeg'> 
+        </div>
+    </div>
+        <div class="stickcont">
+            <div id="stick">
+            </div>
+        </div>    
+        <div class="stickcont">
+            <h3> Please, login to lend or borrow a book</h3>
+        </div>
+        <div id="register_form">
+            <form method="POST" id="register">
+                <label for="login">Your login:</label>
+                <input type="login" name="login" id="login">
+                <br>
+                <label for="password">You password:</label>
+                <input type="password" name="password" id="password">
+                <br>
+
+                <button type="submit">Submit</button>
+              </form>
+
+         </div>
+
+
     </main>
     <script>
+let urls = {
+	createUser:        'http://127.0.0.1:8000/api/v1/auth/users/',
+	loginUser:         'http://127.0.0.1:8000/api/v1/auth/authenticate/',
+	logoutUser:        'http://127.0.0.1:8000/api/v1/auth/token/logout/',
+	currentUser:       'http://127.0.0.1:8000/api/v1/auth/users/me/',
+	createProfile:     'http://127.0.0.1:8000/api/v1/profile',
+	getAllBooks:       'http://127.0.0.1:8000/api/v1/book/',
+	addBook:           'http://127.0.0.1:8000/api/v1/book/',
+	getAllAgeRange:    'http://127.0.0.1:8000/api/v1/age/',
+	searchByGoogleID:  'http://127.0.0.1:8000/api/v1/ggl/',
+	addBookToLibrary:  'http://127.0.0.1:8000/api/v1/library/', 
+	allBooksInLibrary: 'http://127.0.0.1:8000/api/v1/library/list' 
+}
+// *****************
+
+// Basic Function Post Request
+async function requestPOST(url, dataObj={}, token=''){
+	let requestData={
+		method:'POST',
+		headers:{
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify(dataObj)
+	}
+
+	console.log(requestData);
+	
+	if (token != ''){
+		requestData.headers.Authorization = ("Token " + token);
+	}
+	console.log(requestData);
+
+	try{
+		let res = await fetch(url,requestData);
+		console.log(res);
+		if (res.ok){
+			let resData = await res.json();
+			return resData;
+		} else {
+			console.log('----', res.ok, res.status, res.statusText);
+    
+			return {code:res.status, text:res.statusText, ok:res.ok}
+		}
+	} catch (error) {
+		console.log(error);
+    return 'Error connection';
+  }
+}
+
+// Basic Function Get Request
+async function requestGET(url, options={}){
+	const param = new URLSearchParams();
+	for (p in options){
+		param.append(p,options[p])
+	}
+	console.log('GET запрос:', url + '?' + param);
+	try {
+		res= await fetch(url + '?' + param);
+		console.log(res);
+		if (!res.ok){
+			return("Error in Get Request(dima)");
+		} else {
+			let res_Js = res.json();
+			return res_Js;
+		}
+	} catch (error) {
+		
+	}
+}
+// *****************
+
+
+////login check
+let token=localStorage.getItem('token');
+
+if (token==='') {
+  let p = document.querySelector('#profile')
+  p.innerHTML= '<a href="login.html">Login</a>/<a href="register.html">Register</a>'
+  console.log(token)
+}
+else {let p = document.querySelector('#profile')
+        p.innerHTML= "<a href='#' onclick='logoutUserFunction(event)'> Logout </a>"}
+/////
+
+// Logout function
+async function logoutUserFunction(e){
+		e.preventDefault();
+    let tmp=localStorage.getItem('token');
+    console.log('TMP', tmp);
+		console.log('*****User logout', tmp);
+    localStorage.setItem('token', '');
+		let res = await requestPOST(urls.logoutUser, {}, userTOKEN);
+		console.log(typeof(res), res);
+
+		// divUser.textContent = 'Undefined';
+		// divToken.textContent = '';
+	
+}
+
     </script>
 </body>
 </html>

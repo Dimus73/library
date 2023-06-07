@@ -22,7 +22,13 @@
       <main id="content">
     </main>
     <script>
-
+let token=localStorage.getItem('token');
+;
+if (token===null) {
+  console.log(token)
+}
+else {   let p = document.querySelector('#profile')
+        p.innerHTML= "<a href='logout.html'> Logout </a>"}
     </script>
 </body>
 </html>
